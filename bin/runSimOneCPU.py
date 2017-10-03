@@ -279,6 +279,13 @@ def parseCliOptions():
         default    = 0,
         help       = '[phy] Disable interference model.',
     )
+    parser.add_argument('--subGHz',
+        dest       = 'subGHz',
+        nargs      = '+',
+        type       = int,
+        default    = 0,
+        help       = '[phy] Enable sub-GHz communication.',
+    )
 
     options        = parser.parse_args()
 
