@@ -32,6 +32,7 @@ import SimSettings
 class Topology(object):
 
     TWO_DOT_FOUR_GHZ         = 2400000000   # Hz
+    EIGHT_SIX_EIGHT_MHZ      = 868          # MHz
     PISTER_HACK_LOWER_SHIFT  = 40           # -40 dB
     SPEED_OF_LIGHT           = 299792458    # m/s
 
@@ -147,20 +148,31 @@ class Topology(object):
     def _computeRSSI(self,mote,neighbor):
         ''' computes RSSI between any two nodes (not only neighbors) according to the Pister-hack model.'''
 
+        rssi = None
+
         # distance in m
         distance = self._computeDistance(mote,neighbor)
 
-        # sqrt and inverse of the free space path loss
-        fspl = (self.SPEED_OF_LIGHT/(4*math.pi*distance*self.TWO_DOT_FOUR_GHZ))
+        if not self.settings.subGHz:
+            # sqrt and inverse of the free space path loss
+            fspl = (self.SPEED_OF_LIGHT/(4*math.pi*distance*self.TWO_DOT_FOUR_GHZ))
 
-        # simple friis equation in Pr=Pt+Gt+Gr+20log10(c/4piR)
-        pr = mote.txPower + mote.antennaGain + neighbor.antennaGain + (20*math.log10(fspl))
+            # simple friis equation in Pr=Pt+Gt+Gr+20log10(c/4piR)
+            pr = mote.txPower + mote.antennaGain + neighbor.antennaGain + (20*math.log10(fspl))
 
-        # according to the receiver power (RSSI) we can apply the Pister hack model.
-        mu = pr-self.PISTER_HACK_LOWER_SHIFT/2 #chosing the "mean" value
+            # according to the receiver power (RSSI) we can apply the Pister hack model.
+            mu = pr-self.PISTER_HACK_LOWER_SHIFT/2 #chosing the "mean" value
 
-        # the receiver will receive the packet with an rssi uniformly distributed between friis and friis -40
-        rssi = mu + random.uniform(-self.PISTER_HACK_LOWER_SHIFT/2, self.PISTER_HACK_LOWER_SHIFT/2)
+            # the receiver will receive the packet with an rssi uniformly distributed between friis and friis -40
+            rssi = mu + random.uniform(-self.PISTER_HACK_LOWER_SHIFT/2, self.PISTER_HACK_LOWER_SHIFT/2)
+        else:
+            # the antenna correction factor
+            antennaCorrFactor = 0.8 + (1.1 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 0.7) * self.ANTENNA_HEIGHT - 1.56 * math.log10(self.EIGHT_SIX_EIGHT_MHZ)
+
+            # the path loss model (hata model)
+            pathLoss = 69.55 + 26.16 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 13.82 * math.log10(self.ANTENNA_HEIGHT) - antennaCorrFactor + (44.9 - 6.55 * math.log10(self.ANTENNA_HEIGHT)) * math.log10(distance)
+
+            rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
 
         return rssi
 
@@ -177,41 +189,47 @@ class Topology(object):
         http://wsn.eecs.berkeley.edu/connectivity/?dataset=dust
         '''
 
-        rssiPdrTable    = {
-            -97:    0.0000, # this value is not from experiment
-            -96:    0.1494,
-            -95:    0.2340,
-            -94:    0.4071,
-            #<-- 50% PDR is here, at RSSI=-93.6
-            -93:    0.6359,
-            -92:    0.6866,
-            -91:    0.7476,
-            -90:    0.8603,
-            -89:    0.8702,
-            -88:    0.9324,
-            -87:    0.9427,
-            -86:    0.9562,
-            -85:    0.9611,
-            -84:    0.9739,
-            -83:    0.9745,
-            -82:    0.9844,
-            -81:    0.9854,
-            -80:    0.9903,
-            -79:    1.0000, # this value is not from experiment
-        }
+        pdr = None
+        if not self.settings.subGHz:
+            # 2.4GHz
+            rssiPdrTable    = {
+                -97:    0.0000, # this value is not from experiment
+                -96:    0.1494,
+                -95:    0.2340,
+                -94:    0.4071,
+                #<-- 50% PDR is here, at RSSI=-93.6
+                -93:    0.6359,
+                -92:    0.6866,
+                -91:    0.7476,
+                -90:    0.8603,
+                -89:    0.8702,
+                -88:    0.9324,
+                -87:    0.9427,
+                -86:    0.9562,
+                -85:    0.9611,
+                -84:    0.9739,
+                -83:    0.9745,
+                -82:    0.9844,
+                -81:    0.9854,
+                -80:    0.9903,
+                -79:    1.0000, # this value is not from experiment
+            }
 
-        minRssi         = min(rssiPdrTable.keys())
-        maxRssi         = max(rssiPdrTable.keys())
+            minRssi         = min(rssiPdrTable.keys())
+            maxRssi         = max(rssiPdrTable.keys())
 
-        if   rssi<minRssi:
-            pdr         = 0.0
-        elif rssi>maxRssi:
-            pdr         = 1.0
+            if   rssi<minRssi:
+                pdr         = 0.0
+            elif rssi>maxRssi:
+                pdr         = 1.0
+            else:
+                floorRssi   = int(math.floor(rssi))
+                pdrLow      = rssiPdrTable[floorRssi]
+                pdrHigh     = rssiPdrTable[floorRssi+1]
+                pdr         = (pdrHigh-pdrLow)*(rssi-float(floorRssi))+pdrLow # linear interpolation
         else:
-            floorRssi   = int(math.floor(rssi))
-            pdrLow      = rssiPdrTable[floorRssi]
-            pdrHigh     = rssiPdrTable[floorRssi+1]
-            pdr         = (pdrHigh-pdrLow)*(rssi-float(floorRssi))+pdrLow # linear interpolation
+            # 868MHz
+            pdr = 1.0
 
         assert pdr>=0.0
         assert pdr<=1.0
