@@ -36,6 +36,8 @@ class Topology(object):
     PISTER_HACK_LOWER_SHIFT  = 40           # -40 dB
     SPEED_OF_LIGHT           = 299792458    # m/s
 
+    ANTENNA_HEIGHT           = 0.2          # m
+
     STABLE_RSSI              = -93.6        # dBm, corresponds to PDR = 0.5 (see rssiPdrTable below)
     STABLE_NEIGHBORS         = 3
     FULLY_MESHED_SQUARE_SIDE = 0.005        # (hack) small value to speed up the construction of fully-meshed topology
@@ -169,8 +171,8 @@ class Topology(object):
             # the antenna correction factor
             antennaCorrFactor = 0.8 + (1.1 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 0.7) * self.ANTENNA_HEIGHT - 1.56 * math.log10(self.EIGHT_SIX_EIGHT_MHZ)
 
-            # the path loss model (hata model)
-            pathLoss = 69.55 + 26.16 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 13.82 * math.log10(self.ANTENNA_HEIGHT) - antennaCorrFactor + (44.9 - 6.55 * math.log10(self.ANTENNA_HEIGHT)) * math.log10(distance)
+            # hata path loss model
+            pathLoss = 69.55 + 26.16 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 13.82 * math.log10(self.ANTENNA_HEIGHT) - antennaCorrFactor + (44.9 - 6.55 * math.log10(self.ANTENNA_HEIGHT)) * math.log10(distance * 0.001)
 
             rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
 
