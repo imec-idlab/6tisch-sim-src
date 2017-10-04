@@ -286,6 +286,13 @@ def parseCliOptions():
         default    = 0,
         help       = '[phy] Enable sub-GHz communication.',
     )
+    parser.add_argument('--topology',
+        dest       = 'topology',
+        nargs      = '+',
+        type       = str,
+        default    = 'random',
+        help       = 'The structure of the topology.',
+    )
 
     options        = parser.parse_args()
 

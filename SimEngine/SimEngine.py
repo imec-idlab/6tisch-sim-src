@@ -70,7 +70,10 @@ class SimEngine(threading.Thread):
         self.propagation                    = Propagation.Propagation()
         self.motes                          = [Mote.Mote(id) for id in range(self.settings.numMotes)]
         self.topology                       = Topology.Topology(self.motes)
-        self.topology.createTopology()
+        if self.settings.topology == 'random':
+            self.topology.createTopology()
+        elif self.settings.topology == 'grid':
+            self.topology.createTopologyGrid()
 
         # boot all motes
         for i in range(len(self.motes)):

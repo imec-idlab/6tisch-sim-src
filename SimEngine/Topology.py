@@ -11,6 +11,7 @@
 #============================ logging =========================================
 
 import logging
+import numpy as np
 class NullHandler(logging.Handler):
     def emit(self, record):
         pass
@@ -48,6 +49,10 @@ class Topology(object):
 
         # local variables
         self.settings        = SimSettings.SimSettings()
+        self.subGHz          = self.settings.subGHz
+
+        # distance between grid modes (for grid topology only)
+        self.distance        = 0.100
 
         # if fullyMeshed is enabled, create a topology where each node has N-1 stable neighbors
         if self.settings.fullyMeshed:
@@ -145,6 +150,147 @@ class Topology(object):
                     )
         '''
 
+    def getSquareCoordinates(self, coordinate, distance):
+        '''
+        Return the coordinates from the square around the given coordinate.
+        '''
+        coordinates = []
+        coordinates.append((coordinate[0] - distance, coordinate[1] + distance)) # top, left
+        coordinates.append((coordinate[0], coordinate[1] + distance)) # top, middle
+        coordinates.append((coordinate[0] + distance, coordinate[1] + distance)) # top, right
+        coordinates.append((coordinate[0] + distance, coordinate[1])) # middle, right
+        coordinates.append((coordinate[0] + distance, coordinate[1] - distance)) # bottom, right
+        coordinates.append((coordinate[0], coordinate[1] - distance)) # bottom, middle
+        coordinates.append((coordinate[0] - distance, coordinate[1] - distance)) # bottom, left
+        coordinates.append((coordinate[0] - distance, coordinate[1])) # middle, left
+        return coordinates
+
+    def isInCoordinates(self, coordinate, coordinates):
+        epsilon = 0.000001
+        for coordTmp in coordinates:
+            if abs(coordinate[0] - coordTmp[0]) < epsilon and abs(coordinate[1] - coordTmp[1]) < epsilon:
+                return True
+        return False
+
+    def createTopologyGrid(self):
+        '''
+        Create a topology in which all nodes have at least STABLE_NEIGHBORS link with enough RSSI.
+        If the mote does not have STABLE_NEIGHBORS links with enough RSSI, reset the location of the mote.
+        '''
+
+        # find DAG root
+        dagRoot = None
+        for mote in self.motes:
+            if mote.id==0:
+                mote.role_setDagRoot()
+                dagRoot = mote
+        assert dagRoot
+
+        # put DAG root at center of area
+        dagRoot.setLocation(
+            x = self.squareSide/2,
+            y = self.squareSide/2
+        )
+
+        # Copy the contents of the list (but keep the originals) and shuffle them.
+        shuffledMotes = list(self.motes)
+        random.shuffle(shuffledMotes)
+        # print shuffledMotes
+
+        #### GRID PREPRATIONS.
+        dagRootX, dagRootY = dagRoot.getLocation()
+        # determine the number of 'square levels'
+        # For example, here there are two square levels
+        # m m m m m
+        # m m m m m
+        # m m R m m
+        # m m m m m
+        # m m m m m
+        numberOfMotes = len(self.motes)
+        currentLvl = 0
+        sumMotes = 0
+        while (sumMotes < numberOfMotes):
+            if currentLvl == 0:
+                sumMotes += 1
+            else:
+                sumMotes += currentLvl*8
+            currentLvl += 1
+        maxLvl = currentLvl - 1
+
+        coordinatesPerLvl = []
+        for lvl in range(0, maxLvl + 1):
+            coordinatesThisLvl = []
+            if lvl == 0:
+                coordinatesThisLvl = [(dagRootX, dagRootY)]
+            elif lvl == 1:
+                coordinatesThisLvl = self.getSquareCoordinates((dagRootX, dagRootY), self.distance)
+            elif lvl > 1:
+                coordinatesPrevLvl = coordinatesPerLvl[lvl-1]
+                coordinatesPrevPrevLvl = coordinatesPerLvl[lvl-2]
+                for coordinatePrevLvl in coordinatesPrevLvl:
+                    squareCoordinates = self.getSquareCoordinates(coordinatePrevLvl, self.distance)
+                    for squareCoordinate in squareCoordinates:
+                        if not self.isInCoordinates(squareCoordinate, coordinatesPrevPrevLvl) and not self.isInCoordinates(squareCoordinate, coordinatesPrevLvl) and not self.isInCoordinates(squareCoordinate, coordinatesThisLvl):
+                            coordinatesThisLvl.append(squareCoordinate)
+            coordinatesPerLvl.append(coordinatesThisLvl)
+            # print 'Level %d: # motes = %d' % (lvl, len(coordinatesThisLvl))
+            # print coordinatesThisLvl
+            assert len(coordinatesThisLvl) == 1 or len(coordinatesThisLvl) == lvl*8
+
+        allCoordinates = [j for i in coordinatesPerLvl for j in i]
+        # print allCoordinates
+
+        # reposition each mote until it is connected
+        countMote = 1 # root 0 already has coordinates
+        connectedMotes = [dagRoot]
+        for mote in shuffledMotes:
+            if mote in connectedMotes:
+                continue
+
+            connected = False
+            while not connected:
+                # pick a random location
+
+                newX = np.random.normal(allCoordinates[countMote][0], self.distance / 8, 1)[0]
+                newY = np.random.normal(allCoordinates[countMote][1], self.distance / 8, 1)[0]
+
+                mote.setLocation(
+                    x = newX,
+                    y = newY
+                )
+
+                numStableNeighbors = 0
+
+                # count number of neighbors with sufficient RSSI
+                for cm in connectedMotes:
+
+                    rssi = self._computeRSSI(mote, cm)
+                    mote.setRSSI(cm, rssi)
+                    cm.setRSSI(mote, rssi)
+
+                    if rssi>self.STABLE_RSSI:
+                        # print rssi
+                        numStableNeighbors += 1
+
+                # make sure it is connected to at least STABLE_NEIGHBORS motes
+                # or connected to all the currently deployed motes when the number of deployed motes
+                # are smaller than STABLE_NEIGHBORS
+                if numStableNeighbors >= self.STABLE_NEIGHBORS or numStableNeighbors == len(connectedMotes):
+                    connected = True
+
+            connectedMotes += [mote]
+            countMote += 1
+
+        # for each mote, compute PDR to each neighbors
+        for mote in self.motes:
+            for m in self.motes:
+                if mote==m:
+                    continue
+                if mote.getRSSI(m)>mote.minRssi:
+                    pdr = self._computePDR(mote,m)
+                    mote.setPDR(m,pdr)
+                    m.setPDR(mote,pdr)
+
     #======================== private =========================================
 
     def _computeRSSI(self,mote,neighbor):
@@ -155,7 +301,7 @@ class Topology(object):
         # distance in m
         distance = self._computeDistance(mote,neighbor)
 
-        if not self.settings.subGHz:
+        if not self.subGHz:
             # sqrt and inverse of the free space path loss
             fspl = (self.SPEED_OF_LIGHT/(4*math.pi*distance*self.TWO_DOT_FOUR_GHZ))
 
@@ -192,7 +338,7 @@ class Topology(object):
         '''
 
         pdr = None
-        if not self.settings.subGHz:
+        if not SimSettings.SimSettings().subGHz:
             # 2.4GHz
             rssiPdrTable    = {
                 -97:    0.0000, # this value is not from experiment
@@ -276,7 +422,12 @@ def main():
         settings.numPacketsBurst           = None
         motes                              = [Mote.Mote(id) for id in range(settings.numMotes)]
         topology                           = Topology(motes)
-        topology.createTopology()
+        if settings.topology == 'random':
+            print 'Creating a random topology.'
+            topology.createTopology()
+        elif settings.topology == 'grid':
+            print 'Creating a grid topology.'
+            topology.createTopologyGrid()
 
         # print stats
         hopVal    = {}
