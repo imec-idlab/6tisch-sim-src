@@ -286,9 +286,20 @@ def parseCliOptions():
         default    = 0,
         help       = '[phy] Enable sub-GHz communication.',
     )
+    parser.add_argument('--GHzModel',
+        dest       = 'GHzModel',
+        type       = str,
+        default    = 'pister',
+        help       = '[phy] Choose a 2.4 GHz model [pister, itu-urban-micro]',
+    )
+    parser.add_argument('--subGHzModel',
+        dest       = 'subGHzModel',
+        type       = str,
+        default    = 'itu-r',
+        help       = '[phy] Choose a sub-GHz model [itu-rural-macro, ah]',
+    )
     parser.add_argument('--topology',
         dest       = 'topology',
-        nargs      = '+',
         type       = str,
         default    = 'random',
         help       = 'The structure of the topology.',

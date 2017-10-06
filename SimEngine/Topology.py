@@ -33,7 +33,7 @@ import SimSettings
 class Topology(object):
 
     TWO_DOT_FOUR_GHZ         = 2400000000   # Hz
-    EIGHT_SIX_EIGHT_MHZ      = 868          # MHz
+    EIGHT_SIX_EIGHT_MHZ      = 868000000    # Hz
     PISTER_HACK_LOWER_SHIFT  = 40           # -40 dB
     SPEED_OF_LIGHT           = 299792458    # m/s
 
@@ -49,7 +49,6 @@ class Topology(object):
 
         # local variables
         self.settings        = SimSettings.SimSettings()
-        self.subGHz          = self.settings.subGHz
 
         # distance between grid modes (for grid topology only)
         self.distance        = 0.100
@@ -293,34 +292,96 @@ class Topology(object):
 
     #======================== private =========================================
 
+    def _rssiPister(self, mote, neighbor, distance):
+        # sqrt and inverse of the free space path loss
+        fspl = (self.SPEED_OF_LIGHT/(4*math.pi*distance*self.TWO_DOT_FOUR_GHZ))
+
+        # simple friis equation in Pr=Pt+Gt+Gr+20log10(c/4piR)
+        pr = mote.txPower + mote.antennaGain + neighbor.antennaGain + (20*math.log10(fspl))
+
+        # according to the receiver power (RSSI) we can apply the Pister hack model.
+        mu = pr-self.PISTER_HACK_LOWER_SHIFT/2 #chosing the "mean" value
+
+        # the receiver will receive the packet with an rssi uniformly distributed between friis and friis -40
+        rssi = mu + random.uniform(-self.PISTER_HACK_LOWER_SHIFT/2, self.PISTER_HACK_LOWER_SHIFT/2)
+        return rssi
+
+    def _rssiITUUrbanMicro(self, mote, neighbor, freq, distance, hTransmitter, hBaseStation):
+        hEffectBaseStation = hBaseStation - 1.0
+        hEffectTransmitter = hTransmitter - 1.0
+        breakpointDistance = 2 * math.pi * hEffectBaseStation * hEffectTransmitter * freq / self.SPEED_OF_LIGHT
+
+        pathLoss = None
+        if 10 < distance < breakpointDistance:
+            pathLoss = 22.0 * math.log10(distance) + 28.0 + 20.0 * math.log10(freq)
+            pathLoss += random.gauss(0, 3)
+        elif breakpointDistance < distance < 5000:
+            pathLoss = 40.0 * math.log10(distance) + 7.8 - 18 * math.log10(hEffectBaseStation) - 18 * math.log10(hEffectTransmitter) + 2.0 * math.log10(freq)
+            pathLoss += random.gauss(0, 3)
+        else:
+            print distance
+            assert False
+
+        rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
+        return rssi
+
+    def _rssiITURuralMacro(self, mote, neighbor, freq, distance, hTransmitter, hBaseStation):
+        height = 5.0
+        distanceBreakpoint = 2 * math.pi * hBaseStation * hTransmitter * freq / self.SPEED_OF_LIGHT
+
+        pathLoss = None
+        pathLossModel = lambda d : 20.0 * math.log10(40.0 * math.pi * d * freq / 3.0) + math.min(0.03 * math.pow(height, 1.72), 10.0) * log10(d) - math.min(0.044 * math.pow(height, 1.72), 14.77) + 0.002 * math.log10(height) * d
+        if 10 < distance < distanceBreakpoint:
+            pathLoss = pathLossModel(distance)
+            pathLoss += random.gauss(0, 3) # apply fade margin
+        elif distanceBreakpoint < distance < 10000:
+            pathLoss = pathLossModel(distanceBreakpoint) + 40 * math.log10(distance / distanceBreakpoint)
+            pathLoss += random.gauss(0, 6) # apply fade margin
+        else:
+            assert False
+
+        rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
+        return rssi
+
+    def _rssiAHPico(self, mote, neighbor, freq, distance):
+        corrFunc = 21 * math.log10(freq / 900.0)
+        pathLoss = 23.3 + 36.7 * math.log10(distance) + corrFunc
+        pathLoss += random.gauss(0, 3.6)
+
+        rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
+        return rssi
+
     def _computeRSSI(self,mote,neighbor):
         ''' computes RSSI between any two nodes (not only neighbors) according to the Pister-hack model.'''
 
         rssi = None
-
         # distance in m
         distance = self._computeDistance(mote,neighbor)
 
-        if not self.subGHz:
-            # sqrt and inverse of the free space path loss
-            fspl = (self.SPEED_OF_LIGHT/(4*math.pi*distance*self.TWO_DOT_FOUR_GHZ))
+        freq = self.TWO_DOT_FOUR_GHZ
+        if SimSettings.SimSettings().subGHz:
+            freq = self.EIGHT_SIX_EIGHT_MHZ
 
-            # simple friis equation in Pr=Pt+Gt+Gr+20log10(c/4piR)
-            pr = mote.txPower + mote.antennaGain + neighbor.antennaGain + (20*math.log10(fspl))
-
-            # according to the receiver power (RSSI) we can apply the Pister hack model.
-            mu = pr-self.PISTER_HACK_LOWER_SHIFT/2 #chosing the "mean" value
-
-            # the receiver will receive the packet with an rssi uniformly distributed between friis and friis -40
-            rssi = mu + random.uniform(-self.PISTER_HACK_LOWER_SHIFT/2, self.PISTER_HACK_LOWER_SHIFT/2)
+        if not SimSettings.SimSettings().subGHz:
+            if SimSettings.SimSettings().GHzModel == 'pister':
+                rssi = self._rssiPister(mote, neighbor, distance)
+            elif SimSettings.SimSettings().GHzModel == 'itu-urban-micro':
+                hTransmitter = 2.5
+                hBaseStation = 11.0
+                rssi = self._rssiITUUrbanMicro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
+            else:
+                assert False
+        elif SimSettings.SimSettings().subGhz:
+            if SimSettings.SimSettings().subGHzModel == 'itu-rural-macro':
+                hTransmitter = 2.0
+                hBaseStation = 2.0
+                rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
+            elif SimSettings.SimSettings().subGHzModel == 'ah-pico':
+                rssi= self._rssiAHPico(mote, neighbor, freq, distance)
+            else:
+                assert False
         else:
-            # the antenna correction factor
-            antennaCorrFactor = 0.8 + (1.1 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 0.7) * self.ANTENNA_HEIGHT - 1.56 * math.log10(self.EIGHT_SIX_EIGHT_MHZ)
-
-            # hata path loss model
-            pathLoss = 69.55 + 26.16 * math.log10(self.EIGHT_SIX_EIGHT_MHZ) - 13.82 * math.log10(self.ANTENNA_HEIGHT) - antennaCorrFactor + (44.9 - 6.55 * math.log10(self.ANTENNA_HEIGHT)) * math.log10(distance * 0.001)
-
-            rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
+            assert False
 
         return rssi
 
