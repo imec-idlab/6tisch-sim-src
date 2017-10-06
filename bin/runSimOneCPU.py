@@ -296,7 +296,7 @@ def parseCliOptions():
         dest       = 'subGHzModel',
         type       = str,
         default    = 'itu-r',
-        help       = '[phy] Choose a sub-GHz model [itu-rural-macro, ah]',
+        help       = '[phy] Choose a sub-GHz model [itu-rural-macro, ah-pico]',
     )
     parser.add_argument('--topology',
         dest       = 'topology',
