@@ -373,8 +373,8 @@ class Topology(object):
                 assert False
         elif SimSettings.SimSettings().subGhz:
             if SimSettings.SimSettings().subGHzModel == 'itu-rural-macro':
-                hTransmitter = 2.0
-                hBaseStation = 2.0
+                hTransmitter = 2.5
+                hBaseStation = 6
                 rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
             elif SimSettings.SimSettings().subGHzModel == 'ah-pico':
                 rssi= self._rssiAHPico(mote, neighbor, freq, distance)
@@ -398,47 +398,66 @@ class Topology(object):
         http://wsn.eecs.berkeley.edu/connectivity/?dataset=dust
         '''
 
-        pdr = None
-        if not SimSettings.SimSettings().subGHz:
-            # 2.4GHz
-            rssiPdrTable    = {
-                -97:    0.0000, # this value is not from experiment
-                -96:    0.1494,
-                -95:    0.2340,
-                -94:    0.4071,
-                #<-- 50% PDR is here, at RSSI=-93.6
-                -93:    0.6359,
-                -92:    0.6866,
-                -91:    0.7476,
-                -90:    0.8603,
-                -89:    0.8702,
-                -88:    0.9324,
-                -87:    0.9427,
-                -86:    0.9562,
-                -85:    0.9611,
-                -84:    0.9739,
-                -83:    0.9745,
-                -82:    0.9844,
-                -81:    0.9854,
-                -80:    0.9903,
-                -79:    1.0000, # this value is not from experiment
-            }
+	#rate=250kbps
+	brate=250
+	#bw=500kbps
+	bw=500
 
-            minRssi         = min(rssiPdrTable.keys())
-            maxRssi         = max(rssiPdrTable.keys())
+	if SimSettings.SimSettings().subGHz:
+		S=-101.5		#cc1200
+		snr = rssi - S	
+		EBN=snr - 10*math.log10(bw/brate)
+		b=0.5 * sp.erfc(math.sqrt(10**((EBN*0.5)/10)))	#2-fsk
+	else:
+		S=-97			#cc2538
+		snr = rssi - S	
+		EBN=snr - 10*math.log10(bw/brate)
+		b=sp.erfc(math.sqrt(10**((EBN*0.5)/10)))	#OQPSK
 
-            if   rssi<minRssi:
-                pdr         = 0.0
-            elif rssi>maxRssi:
-                pdr         = 1.0
-            else:
-                floorRssi   = int(math.floor(rssi))
-                pdrLow      = rssiPdrTable[floorRssi]
-                pdrHigh     = rssiPdrTable[floorRssi+1]
-                pdr         = (pdrHigh-pdrLow)*(rssi-float(floorRssi))+pdrLow # linear interpolation
-        else:
-            # 868MHz
-            pdr = 1.0
+	#we assume 128byte size packets 
+	pdr=(1-b)**(128*8)
+
+#        pdr = None
+#        if not SimSettings.SimSettings().subGHz:
+#            # 2.4GHz
+#            rssiPdrTable    = {
+#                -97:    0.0000, # this value is not from experiment
+#                -96:    0.1494,
+#                -95:    0.2340,
+#                -94:    0.4071,
+#                #<-- 50% PDR is here, at RSSI=-93.6
+#                -93:    0.6359,
+#                -92:    0.6866,
+#                -91:    0.7476,
+#                -90:    0.8603,
+#                -89:    0.8702,
+#                -88:    0.9324,
+#                -87:    0.9427,
+#                -86:    0.9562,
+#                -85:    0.9611,
+#                -84:    0.9739,
+#                -83:    0.9745,
+#                -82:    0.9844,
+#                -81:    0.9854,
+#                -80:    0.9903,
+#                -79:    1.0000, # this value is not from experiment
+#            }
+
+#            minRssi         = min(rssiPdrTable.keys())
+#            maxRssi         = max(rssiPdrTable.keys())
+
+#            if   rssi<minRssi:
+#                pdr         = 0.0
+#            elif rssi>maxRssi:
+#                pdr         = 1.0
+#            else:
+#                floorRssi   = int(math.floor(rssi))
+#                pdrLow      = rssiPdrTable[floorRssi]
+#                pdrHigh     = rssiPdrTable[floorRssi+1]
+#                pdr         = (pdrHigh-pdrLow)*(rssi-float(floorRssi))+pdrLow # linear interpolation
+#        else:
+#            # 868MHz
+#            pdr = 1.0
 
         assert pdr>=0.0
         assert pdr<=1.0
