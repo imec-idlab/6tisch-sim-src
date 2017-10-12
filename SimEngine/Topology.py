@@ -23,7 +23,7 @@ log.addHandler(NullHandler())
 
 import random
 import math
-
+import scipy.special as sp
 import SimSettings
 
 #============================ defines =========================================
@@ -39,7 +39,8 @@ class Topology(object):
 
     ANTENNA_HEIGHT           = 0.2          # m
 
-    STABLE_RSSI              = -93.6        # dBm, corresponds to PDR = 0.5 (see rssiPdrTable below)
+    STABLE_RSSI_GHz          = -78        # dBm, corresponds to aprox PDR = 0.7 in the 2.4GHz band
+    STABLE_RSSI_subGHz       = -83        # dBm, corresponds to aprox PDR = 0.7 in the 868MHz band
     STABLE_NEIGHBORS         = 3
     FULLY_MESHED_SQUARE_SIDE = 0.005        # (hack) small value to speed up the construction of fully-meshed topology
 
@@ -108,8 +109,12 @@ class Topology(object):
                     mote.setRSSI(cm, rssi)
                     cm.setRSSI(mote, rssi)
 
-                    if rssi>self.STABLE_RSSI:
-                        numStableNeighbors += 1
+		    if SimSettings.SimSettings().subGHz:
+                        if rssi>self.STABLE_RSSI_subGHz:
+                            numStableNeighbors += 1
+		    else:
+                        if rssi>self.STABLE_RSSI_GHz:
+                            numStableNeighbors += 1
 
                 # make sure it is connected to at least stable_neighbors motes
                 # or connected to all the currently deployed motes when the number of deployed motes
@@ -267,9 +272,12 @@ class Topology(object):
                     mote.setRSSI(cm, rssi)
                     cm.setRSSI(mote, rssi)
 
-                    if rssi>self.STABLE_RSSI:
-                        # print rssi
-                        numStableNeighbors += 1
+		    if SimSettings.SimSettings().subGHz:
+                        if rssi>self.STABLE_RSSI_subGHz:
+                            numStableNeighbors += 1
+		    else:
+                        if rssi>self.STABLE_RSSI_GHz:
+                            numStableNeighbors += 1
 
                 # make sure it is connected to at least STABLE_NEIGHBORS motes
                 # or connected to all the currently deployed motes when the number of deployed motes
