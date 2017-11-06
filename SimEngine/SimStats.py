@@ -86,6 +86,9 @@ class SimStats(object):
     
     def _actionStart(self):
         '''Called once at beginning of the simulation.'''
+	#always pause at the begining by default
+	#firstpause=1
+        #self.engine.pauseAtAsn(firstpause)
         pass
     
     def _actionEndCycle(self):
@@ -94,8 +97,8 @@ class SimStats(object):
         cycle = int(self.engine.getAsn()/self.settings.slotframeLength)
         
         # print
-        if self.settings.cpuID==None:
-            print('   cycle: {0}/{1}'.format(cycle,self.settings.numCyclesPerRun-1))
+        #if self.settings.cpuID==None:
+        print('   cycle: {0}/{1}'.format(cycle,self.settings.numCyclesPerRun-1))
 
         # write statistics to output file
         self._fileWriteStats(
@@ -269,6 +272,52 @@ class SimStats(object):
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['chargeConsumed']/self.numCycles) for mote in self.engine.motes])
             )
         ]
+	pgen=0
+	for mote in self.engine.motes:
+		pgen=pgen+mote.getMoteStats()['pktGen']
+        output += [
+            '#PktGen runNum={0} {1} {2}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktGen']) for mote in self.engine.motes]),pgen
+            )
+        ]
+	prec=0
+	for mote in self.engine.motes:
+		prec=prec+mote.getMoteStats()['pktReceived']
+        output += [
+            '#PktReceived runNum={0} {1} {2}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktReceived']) for mote in self.engine.motes]),prec
+            )
+        ]
+	pqueued=0
+	for mote in self.engine.motes:
+		pqueued=pqueued+mote.getMoteStats()['dataQueueFill']
+	output += [
+            '#PktInQueue runNum={0} {1} {2}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['dataQueueFill']) for mote in self.engine.motes]),pqueued
+            )
+        ]
+	pdropqueue=0
+	for mote in self.engine.motes:
+		pdropqueue=pdropqueue+mote.getMoteStats()['pktDropQueue']
+	output += [
+            '#PktDropsQueue runNum={0} {1} {2}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktDropQueue']) for mote in self.engine.motes]),pdropqueue
+            )
+        ]
+	pdropmac=0
+	for mote in self.engine.motes:
+		pdropmac=pdropmac+mote.getMoteStats()['pktDropMac']
+	output += [
+            '#PktDropsMac runNum={0} {1} {2}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktDropMac']) for mote in self.engine.motes]),pdropmac
+            )
+        ]
+	assert pgen == prec + pqueued + pdropqueue + pdropmac
         if self.settings.withJoin:
             output += [
                 '#join runNum={0} {1}'.format(
@@ -280,6 +329,13 @@ class SimStats(object):
                 '#firstBeacon runNum={0} {1}'.format(
                     self.runNum,
                     ' '.join(['{0}@{1}'.format(mote.id, mote.firstBeaconAsn) for mote in self.engine.motes])
+                )
+            ]
+	if self.settings.withBootstrap:
+	    output += [
+                '#firstReady runNum={0} {1}'.format(
+                    self.runNum,
+                    ' '.join(['{0}@{1}'.format(mote.id, mote.firstIsBootstrapped) for mote in self.engine.motes])
                 )
             ]
         output  = '\n'.join(output)

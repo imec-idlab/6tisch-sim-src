@@ -108,7 +108,6 @@ class Topology(object):
                     rssi = self._computeRSSI(mote, cm)
                     mote.setRSSI(cm, rssi)
                     cm.setRSSI(mote, rssi)
-
 		    if SimSettings.SimSettings().subGHz:
                         if rssi>self.STABLE_RSSI_subGHz:
                             numStableNeighbors += 1
@@ -336,19 +335,23 @@ class Topology(object):
     def _rssiITURuralMacro(self, mote, neighbor, freq, distance, hTransmitter, hBaseStation):
         height = 5.0
         distanceBreakpoint = 2 * math.pi * hBaseStation * hTransmitter * freq / self.SPEED_OF_LIGHT
-
+	freq = freq*0.000000001
         pathLoss = None
-        pathLossModel = lambda d : 20.0 * math.log10(40.0 * math.pi * d * freq / 3.0) + math.min(0.03 * math.pow(height, 1.72), 10.0) * log10(d) - math.min(0.044 * math.pow(height, 1.72), 14.77) + 0.002 * math.log10(height) * d
-        if 10 < distance < distanceBreakpoint:
+        pathLossModel = lambda d : 20.0 * math.log10(40.0 * math.pi * d * freq / 3.0) + min(0.03 * math.pow(height, 1.72), 10.0) * math.log10(d) - min(0.044 * math.pow(height, 1.72), 14.77) + 0.002 * math.log10(height) * d
+        if  distance < distanceBreakpoint:
             pathLoss = pathLossModel(distance)
             pathLoss += random.gauss(0, 3) # apply fade margin
         elif distanceBreakpoint < distance < 10000:
             pathLoss = pathLossModel(distanceBreakpoint) + 40 * math.log10(distance / distanceBreakpoint)
             pathLoss += random.gauss(0, 6) # apply fade margin
         else:
+	    #print distance
             assert False
+	    #pathLoss=1000
 
+	
         rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
+	#print str(distance)+" - "+str(rssi)
         return rssi
 
     def _rssiAHPico(self, mote, neighbor, freq, distance):
@@ -373,13 +376,14 @@ class Topology(object):
         if not SimSettings.SimSettings().subGHz:
             if SimSettings.SimSettings().GHzModel == 'pister':
                 rssi = self._rssiPister(mote, neighbor, distance)
-            elif SimSettings.SimSettings().GHzModel == 'itu-urban-micro':
+            elif SimSettings.SimSettings().GHzModel == 'itu-rural-macro':
                 hTransmitter = 2.5
-                hBaseStation = 11.0
-                rssi = self._rssiITUUrbanMicro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
+                hBaseStation = 6
+                #rssi = self._rssiITUUrbanMicro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
+	        rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
             else:
                 assert False
-        elif SimSettings.SimSettings().subGhz:
+        elif SimSettings.SimSettings().subGHz:
             if SimSettings.SimSettings().subGHzModel == 'itu-rural-macro':
                 hTransmitter = 2.5
                 hBaseStation = 6
