@@ -52,7 +52,7 @@ class Topology(object):
         self.settings        = SimSettings.SimSettings()
 
         # distance between grid modes (for grid topology only)
-        self.distance        = 0.100
+        self.distance        = 0.200
 
         # if fullyMeshed is enabled, create a topology where each node has N-1 stable neighbors
         if self.settings.fullyMeshed:
@@ -109,10 +109,10 @@ class Topology(object):
                     mote.setRSSI(cm, rssi)
                     cm.setRSSI(mote, rssi)
 
-		    if SimSettings.SimSettings().subGHz:
+                    if SimSettings.SimSettings().subGHz:
                         if rssi>self.STABLE_RSSI_subGHz:
                             numStableNeighbors += 1
-		    else:
+                    else:
                         if rssi>self.STABLE_RSSI_GHz:
                             numStableNeighbors += 1
 
@@ -254,7 +254,6 @@ class Topology(object):
             connected = False
             while not connected:
                 # pick a random location
-
                 newX = np.random.normal(allCoordinates[countMote][0], self.distance / 8, 1)[0]
                 newY = np.random.normal(allCoordinates[countMote][1], self.distance / 8, 1)[0]
 
@@ -272,10 +271,11 @@ class Topology(object):
                     mote.setRSSI(cm, rssi)
                     cm.setRSSI(mote, rssi)
 
-		    if SimSettings.SimSettings().subGHz:
+                    if SimSettings.SimSettings().subGHz:
                         if rssi>self.STABLE_RSSI_subGHz:
                             numStableNeighbors += 1
-		    else:
+                    else:
+                        print 'Mote %d (RSSI %.4f) - Stable RSSI %.4f - other mote %d (RSSI %.4f)' % (mote.id, rssi, self.STABLE_RSSI_GHz, cm.id, rssi)
                         if rssi>self.STABLE_RSSI_GHz:
                             numStableNeighbors += 1
 
@@ -298,6 +298,8 @@ class Topology(object):
                     mote.setPDR(m,pdr)
                     m.setPDR(mote,pdr)
 
+        print 'Done. Made topology!'
+
     #======================== private =========================================
 
     def _rssiPister(self, mote, neighbor, distance):
@@ -317,6 +319,7 @@ class Topology(object):
     def _rssiITUUrbanMicro(self, mote, neighbor, freq, distance, hTransmitter, hBaseStation):
         hEffectBaseStation = hBaseStation - 1.0
         hEffectTransmitter = hTransmitter - 1.0
+        freq = freq / 100000000
         breakpointDistance = 2 * math.pi * hEffectBaseStation * hEffectTransmitter * freq / self.SPEED_OF_LIGHT
 
         pathLoss = None
@@ -335,6 +338,7 @@ class Topology(object):
 
     def _rssiITURuralMacro(self, mote, neighbor, freq, distance, hTransmitter, hBaseStation):
         height = 5.0
+        freq = freq / 100000000
         distanceBreakpoint = 2 * math.pi * hBaseStation * hTransmitter * freq / self.SPEED_OF_LIGHT
 
         pathLoss = None
@@ -413,16 +417,16 @@ class Topology(object):
 
 	if SimSettings.SimSettings().subGHz:
 		S=-101.5		#cc1200
-		snr = rssi - S	
+		snr = rssi - S
 		EBN=snr - 10*math.log10(bw/brate)
 		b=0.5 * sp.erfc(math.sqrt(10**((EBN*0.5)/10)))	#2-fsk
 	else:
 		S=-97			#cc2538
-		snr = rssi - S	
+		snr = rssi - S
 		EBN=snr - 10*math.log10(bw/brate)
 		b=sp.erfc(math.sqrt(10**((EBN*0.5)/10)))	#OQPSK
 
-	#we assume 128byte size packets 
+	#we assume 128byte size packets
 	pdr=(1-b)**(128*8)
 
 #        pdr = None
