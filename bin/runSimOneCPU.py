@@ -65,7 +65,7 @@ def parseCliOptions():
     parser.add_argument( '--numRuns',
         dest       = 'numRuns',
         type       = int,
-        default    = 2,
+        default    = 1,
         help       = '[sim] Number of simulation runs.',
     )
     parser.add_argument( '--numCyclesPerRun',
@@ -91,7 +91,7 @@ def parseCliOptions():
     parser.add_argument( '--squareSide',
         dest       = 'squareSide',
         type       = float,
-        default    = 2.000,
+        default    = 0.250,
         help       = '[topology] Side of the deployment area (km).',
     )
     parser.add_argument('--fullyMeshed',
@@ -106,7 +106,7 @@ def parseCliOptions():
         dest       = 'withJoin',
         nargs      = '+',
         type       = int,
-        default    = 0,
+        default    = 1,
         help       =' [join process] 1 to enable join process.',
     )
     parser.add_argument( '--joinNumExchanges',
@@ -122,12 +122,20 @@ def parseCliOptions():
         default    = 60.0,
         help       = '[join process] Timeout to attempt join process (s).',
     )
+    # bootstrap process
+    parser.add_argument('--withBootstrap',
+        dest       = 'withBootstrap',
+        nargs      = '+',
+        type       = int,
+        default    = 1,
+        help       =' [bootstrap process] 1 to enable Bootstrap process.',
+    )
     # app
     parser.add_argument( '--pkPeriod',
         dest       = 'pkPeriod',
         nargs      = '+',
         type       = float,
-        default    = None,
+        default    = 1,
         help       = '[app] Average period between two data packets (s).',
     )
     parser.add_argument( '--pkPeriodVar',
@@ -140,14 +148,14 @@ def parseCliOptions():
         dest       = 'burstTimestamp',
         nargs      = '+',
         type       = float,
-        default    = 20,
+        default    = None,
         help       = '[app] Timestamp when the burst happens (s).',
     )
     parser.add_argument( '--numPacketsBurst',
         dest       = 'numPacketsBurst',
         nargs      = '+',
         type       = int,
-        default    = 5,
+        default    = None,
         help       = '[app] Number of packets in a burst, per node.',
     )
     parser.add_argument('--downwardAcks',
@@ -242,7 +250,7 @@ def parseCliOptions():
     parser.add_argument('--bayesianBroadcast',
         dest       = 'bayesianBroadcast',
         type       = int,
-        default    = 0,
+        default    = 1,
         help       = '[tsch] Enable Bayesian broadcast algorithm.',
     )
     parser.add_argument('--beaconProbability',
@@ -289,13 +297,13 @@ def parseCliOptions():
     parser.add_argument('--GHzModel',
         dest       = 'GHzModel',
         type       = str,
-        default    = 'pister',
+        default    = 'itu-rural-macro',
         help       = '[phy] Choose a 2.4 GHz model [pister, itu-urban-micro]',
     )
     parser.add_argument('--subGHzModel',
         dest       = 'subGHzModel',
         type       = str,
-        default    = 'itu-r',
+        default    = 'itu-rural-macro',
         help       = '[phy] Choose a sub-GHz model [itu-rural-macro, ah-pico]',
     )
     parser.add_argument('--topology',
@@ -304,7 +312,6 @@ def parseCliOptions():
         default    = 'random',
         help       = 'The structure of the topology.',
     )
-
     options        = parser.parse_args()
 
     return options.__dict__
