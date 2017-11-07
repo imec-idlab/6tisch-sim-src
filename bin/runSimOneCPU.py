@@ -71,7 +71,7 @@ def parseCliOptions():
     parser.add_argument( '--numCyclesPerRun',
         dest       = 'numCyclesPerRun',
         type       = int,
-        default    = 100,
+        default    = 300,
         help       = '[simulation] Duration of a run, in slotframes.',
     )
     parser.add_argument('--simDataDir',
@@ -85,13 +85,13 @@ def parseCliOptions():
         dest       = 'numMotes',
         nargs      = '+',
         type       = int,
-        default    = [50],
+        default    = [25],
         help       = '[topology] Number of simulated motes.',
     )
     parser.add_argument( '--squareSide',
         dest       = 'squareSide',
         type       = float,
-        default    = 1.000,
+        default    = 0.500,
         help       = '[topology] Side of the deployment area (km).',
     )
     parser.add_argument('--fullyMeshed',
@@ -135,7 +135,7 @@ def parseCliOptions():
         dest       = 'pkPeriod',
         nargs      = '+',
         type       = float,
-        default    = 1,
+        default    = 5,
         help       = '[app] Average period between two data packets (s).',
     )
     parser.add_argument( '--pkPeriodVar',
@@ -257,14 +257,14 @@ def parseCliOptions():
         dest       = 'beaconProbability',
         nargs      = '+',
         type       = float,
-        default    = 0.13,
+        default    = 0.15,
         help       = '[tsch] Beacon probability with Bayesian broadcast algorithm.',
     )
     parser.add_argument('--dioProbability',
         dest       = 'dioProbability',
         nargs      = '+',
         type       = float,
-        default    = 0.13,
+        default    = 0.15,
         help       = '[tsch] DIO probability with Bayesian broadcast algorithm.',
     )
     # phy

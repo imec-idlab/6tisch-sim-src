@@ -41,7 +41,7 @@ class Topology(object):
 
     STABLE_RSSI_GHz          = -78        # dBm, corresponds to aprox PDR = 0.7 in the 2.4GHz band
     STABLE_RSSI_subGHz       = -83        # dBm, corresponds to aprox PDR = 0.7 in the 868MHz band
-    STABLE_NEIGHBORS         = 3
+    STABLE_NEIGHBORS         = 1
     FULLY_MESHED_SQUARE_SIDE = 0.005        # (hack) small value to speed up the construction of fully-meshed topology
 
     def __init__(self, motes):
@@ -52,7 +52,7 @@ class Topology(object):
         self.settings        = SimSettings.SimSettings()
 
         # distance between grid modes (for grid topology only)
-        self.distance        = 0.050
+        self.distance        = 0.070
 
         # if fullyMeshed is enabled, create a topology where each node has N-1 stable neighbors
         if self.settings.fullyMeshed:
