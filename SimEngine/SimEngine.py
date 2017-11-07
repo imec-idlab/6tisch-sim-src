@@ -75,6 +75,8 @@ class SimEngine(threading.Thread):
         elif self.settings.topology == 'grid':
             self.topology.createTopologyGrid()
 
+        self.startCharge               = {}
+
 	#not valid values. Will be set by the last mote that becomes ready (finishes bootstrap)
 	self.asnInitExperiment=999999999
 	self.asnEndExperiment=999999999

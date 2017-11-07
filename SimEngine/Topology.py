@@ -52,7 +52,7 @@ class Topology(object):
         self.settings        = SimSettings.SimSettings()
 
         # distance between grid modes (for grid topology only)
-        self.distance        = 0.200
+        self.distance        = 0.050
 
         # if fullyMeshed is enabled, create a topology where each node has N-1 stable neighbors
         if self.settings.fullyMeshed:
@@ -338,8 +338,9 @@ class Topology(object):
 
     def _rssiITURuralMacro(self, mote, neighbor, freq, distance, hTransmitter, hBaseStation):
         height = 5.0
-        freq = freq / 100000000
         distanceBreakpoint = 2 * math.pi * hBaseStation * hTransmitter * freq / self.SPEED_OF_LIGHT
+        freq = freq / 1000000000.0
+        print freq
         pathLoss = None
         pathLossModel = lambda d : 20.0 * math.log10(40.0 * math.pi * d * freq / 3.0) + min(0.03 * math.pow(height, 1.72), 10.0) * math.log10(d) - min(0.044 * math.pow(height, 1.72), 14.77) + 0.002 * math.log10(height) * d
         if  distance < distanceBreakpoint:
@@ -353,8 +354,8 @@ class Topology(object):
             assert False
 	    #pathLoss=1000
 
-
         rssi = mote.txPower + mote.antennaGain + neighbor.antennaGain - pathLoss
+        print rssi
 	#print str(distance)+" - "+str(rssi)
         return rssi
 
@@ -384,7 +385,7 @@ class Topology(object):
                 hTransmitter = 2.5
                 hBaseStation = 6
                 #rssi = self._rssiITUUrbanMicro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
-	        rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
+                rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
             else:
                 assert False
         elif SimSettings.SimSettings().subGHz:

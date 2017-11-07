@@ -91,7 +91,7 @@ def parseCliOptions():
     parser.add_argument( '--squareSide',
         dest       = 'squareSide',
         type       = float,
-        default    = 0.250,
+        default    = 1.000,
         help       = '[topology] Side of the deployment area (km).',
     )
     parser.add_argument('--fullyMeshed',
@@ -257,14 +257,14 @@ def parseCliOptions():
         dest       = 'beaconProbability',
         nargs      = '+',
         type       = float,
-        default    = 0.33,
+        default    = 0.13,
         help       = '[tsch] Beacon probability with Bayesian broadcast algorithm.',
     )
     parser.add_argument('--dioProbability',
         dest       = 'dioProbability',
         nargs      = '+',
         type       = float,
-        default    = 0.33,
+        default    = 0.13,
         help       = '[tsch] DIO probability with Bayesian broadcast algorithm.',
     )
     # phy
