@@ -382,16 +382,16 @@ class Topology(object):
             if SimSettings.SimSettings().GHzModel == 'pister':
                 rssi = self._rssiPister(mote, neighbor, distance)
             elif SimSettings.SimSettings().GHzModel == 'itu-rural-macro':
-                hTransmitter = 2.5
-                hBaseStation = 6
+                hTransmitter = 3.5
+                hBaseStation = 10.5
                 #rssi = self._rssiITUUrbanMicro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
                 rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
             else:
                 assert False
         elif SimSettings.SimSettings().subGHz:
             if SimSettings.SimSettings().subGHzModel == 'itu-rural-macro':
-                hTransmitter = 2.5
-                hBaseStation = 6
+                hTransmitter = 3.5
+                hBaseStation = 10.5
                 rssi = self._rssiITURuralMacro(mote, neighbor, freq, distance, hTransmitter, hBaseStation)
             elif SimSettings.SimSettings().subGHzModel == 'ah-pico':
                 rssi= self._rssiAHPico(mote, neighbor, freq, distance)

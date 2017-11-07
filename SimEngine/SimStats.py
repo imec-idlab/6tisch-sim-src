@@ -269,7 +269,7 @@ class SimStats(object):
         output += [
             '#aveChargePerCycle runNum={0} {1}'.format(
                 self.runNum,
-                ' '.join(['{0}@{1:.2f}'.format(mote.id,(mote.getMoteStats()['chargeConsumed']-self.engine.startCharge[mote.id])/self.numCycles) for mote in self.engine.motes])
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,(mote.getMoteStats()['chargeConsumed']-self.engine.startCharge[mote.id])/self.settings.numCycles) for mote in self.engine.motes])
             )
         ]
 	pgen=0
