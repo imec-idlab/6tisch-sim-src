@@ -254,8 +254,8 @@ class Topology(object):
             connected = False
             while not connected:
                 # pick a random location
-                newX = np.random.normal(allCoordinates[countMote][0], self.distance / 8, 1)[0]
-                newY = np.random.normal(allCoordinates[countMote][1], self.distance / 8, 1)[0]
+                newX = np.random.normal(allCoordinates[countMote][0], self.distance / 16, 1)[0]
+                newY = np.random.normal(allCoordinates[countMote][1], self.distance / 16, 1)[0]
 
                 mote.setLocation(
                     x = newX,
