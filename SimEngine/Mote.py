@@ -1676,7 +1676,7 @@ class Mote(object):
                     return False
 
                 #transaction is considered as failed since the timeout has already scheduled for this ASN. Too late for removing the event, ignore packet
-                if seq!=self.sixtopStates[neighbor.id]['tx']['seqNum']:
+                if self.sixtopStates[smac.id]['tx']['timer']['asn'] == self.engine.getAsn():
                     # log
                     self._log(
                             self.INFO,
@@ -1799,7 +1799,7 @@ class Mote(object):
                     return False
 
                 #transaction is considered as failed since the timeout has already scheduled for this ASN. Too late for removing the event, ignore packet
-                if seq!=self.sixtopStates[neighbor.id]['tx']['seqNum']:
+                if self.sixtopStates[smac.id]['tx']['timer']['asn'] == self.engine.getAsn():
                     # log
                     self._log(
                             self.INFO,
