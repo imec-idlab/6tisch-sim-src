@@ -116,6 +116,13 @@ class SimStats(object):
             )
         )
 
+	# temp hack
+	if self.engine.removeSharedCells == True:
+            for mote in self.engine.motes:
+		for ts in range(1,5):
+		    mote.schedule.pop(ts)
+	    self.engine.removeSharedCells = False
+
         # schedule next statistics collection
         self.engine.scheduleAtAsn(
             asn         = self.engine.getAsn()+self.settings.slotframeLength,
@@ -234,10 +241,12 @@ class SimStats(object):
 
         vals = []
         for k in self.columnNames:
-            if type(stats[k])==float:
+            if k in stats and type(stats[k])==float:
                 vals += ['{0:.3f}'.format(stats[k])]
-            else:
+            elif k in stats:
                 vals += [stats[k]]
+	    else:
+		vals += [0]
 
         output += ['  '+formatString.format(*tuple(vals))]
 

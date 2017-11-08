@@ -76,6 +76,7 @@ class SimEngine(threading.Thread):
             self.topology.createTopologyGrid()
 
         self.startCharge               = {}
+	self.removeSharedCells	       = False
 
 	#not valid values. Will be set by the last mote that becomes ready (finishes bootstrap)
 	self.asnInitExperiment=999999999

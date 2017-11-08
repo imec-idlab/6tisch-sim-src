@@ -132,7 +132,7 @@ class Mote(object):
     TSCH_QUEUE_SIZE                    = 10
     TSCH_MAXTXRETRIES                  = 5
     TSCH_MIN_BACKOFF_EXPONENT          = 4
-    TSCH_MAX_BACKOFF_EXPONENT          = 8
+    TSCH_MAX_BACKOFF_EXPONENT          = 6
     #=== radio
     RADIO_MAXDRIFT                     = 30 # in ppm
     #=== battery
@@ -271,7 +271,7 @@ class Mote(object):
         self.parents              = {} # dictionary containing parents of each node from whom DAG root received a DAO
         self.isJoined             = True
         self.isSync               = True
-        self.isBootstrapped              = True
+        self.isBootstrapped       = True
 
         # imprint DAG root's ID at each mote
         for mote in self.engine.motes:
@@ -494,7 +494,9 @@ class Mote(object):
                 # check if all motes are ready, if so, schedule end the simulation
                 if all(mote.isBootstrapped == True for mote in self.engine.motes):
                     for mote in self.engine.motes:
-                        self.engine.startCharge[mote.id] = mote.chargeConsumed
+                        self.engine.startCharge[mote.id] = mote.chargeConsumed # save the charge
+			# remove the SHARED cells
+			self.engine.removeSharedCells = True
                     if self.settings.numCyclesPerRun!=0:
                         #experiment time in ASNs
                         simTime=self.settings.numCyclesPerRun*self.settings.slotframeLength
@@ -2928,10 +2930,10 @@ class Mote(object):
 
         # add minimal cell
         self._tsch_addCells(self._myNeigbors(),[(0,0,self.DIR_TXRX_SHARED)])
-        #self._tsch_addCells(self._myNeigbors(),[(1,0,self.DIR_TXRX_SHARED)])
-        #self._tsch_addCells(self._myNeigbors(),[(2,0,self.DIR_TXRX_SHARED)])
-        #self._tsch_addCells(self._myNeigbors(),[(3,0,self.DIR_TXRX_SHARED)])
-        #self._tsch_addCells(self._myNeigbors(),[(4,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(1,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(2,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(3,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(4,0,self.DIR_TXRX_SHARED)])
 
         # RPL
         self._rpl_schedule_sendDIO(firstDIO=True)
