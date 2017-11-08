@@ -10,7 +10,7 @@ import time
 import math
 import multiprocessing
 
-MIN_TOTAL_RUNRUNS = 1
+MIN_TOTAL_RUNRUNS = 4
 
 def runOneSim(params):
     (cpuID,numRuns,numMotes,namedir,rpl,otf,sixtop) = params
@@ -19,11 +19,11 @@ def runOneSim(params):
     command    += ['python runSimOneCPU.py']
     command    += ['--numRuns {0}'.format(numRuns)]
 
-    command    += ['--numMotes {0}'.format(numMotes)] 
-    command    += ['--simDataDir {0}'.format(namedir)]
-    command    += ['--dioPeriod {0}'.format(rpl)]
-    command    += ['--otfHousekeepingPeriod {0}'.format(otf)]
-    command    += ['--sixtopHousekeepingPeriod {0}'.format(sixtop)]
+    #command    += ['--numMotes {0}'.format(numMotes)] 
+    #command    += ['--simDataDir {0}'.format(namedir)]
+    #command    += ['--dioPeriod {0}'.format(rpl)]
+    #command    += ['--otfHousekeepingPeriod {0}'.format(otf)]
+    #command    += ['--sixtopHousekeepingPeriod {0}'.format(sixtop)]
 
     command    += ['--cpuID {0}'.format(cpuID)]
     #command    += ['&']
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     multiprocessing.freeze_support()
     #num_cpus = multiprocessing.cpu_count()
-    num_cpus = 1
+    num_cpus = 4
     runsPerCpu = int(math.ceil(float(MIN_TOTAL_RUNRUNS)/float(num_cpus)))
     pool = multiprocessing.Pool(num_cpus)
     pool.map_async(runOneSim,[(i,runsPerCpu,numMotes,namedir,rpl,otf,sixtop) for i in range(num_cpus)])

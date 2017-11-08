@@ -123,7 +123,7 @@ class Mote(object):
     IANA_6TOP_RC_CELLLIST_ERR                   = 0x09 # cellList error
 
     #=== 6P default timeout value
-    SIXTOP_TIMEOUT                     = 15
+    SIXTOP_TIMEOUT                     = 30
 
     #=== otf
     OTF_TRAFFIC_SMOOTHING              = 0.5
@@ -131,8 +131,8 @@ class Mote(object):
     #=== tsch
     TSCH_QUEUE_SIZE                    = 10
     TSCH_MAXTXRETRIES                  = 5
-    TSCH_MIN_BACKOFF_EXPONENT          = 2
-    TSCH_MAX_BACKOFF_EXPONENT          = 4
+    TSCH_MIN_BACKOFF_EXPONENT          = 4
+    TSCH_MAX_BACKOFF_EXPONENT          = 8
     #=== radio
     RADIO_MAXDRIFT                     = 30 # in ppm
     #=== battery
@@ -2356,7 +2356,7 @@ class Mote(object):
                     self.backoff -= 1
                 # send packet
                 if self.pktToSend:
-
+		    print 'packet type: %d - %s' % (self.id, pkt['type'])
                     cell['numTx'] += 1
 
                     if pkt['type']==self.IANA_6TOP_TYPE_REQUEST:
@@ -2928,10 +2928,10 @@ class Mote(object):
 
         # add minimal cell
         self._tsch_addCells(self._myNeigbors(),[(0,0,self.DIR_TXRX_SHARED)])
-        self._tsch_addCells(self._myNeigbors(),[(1,0,self.DIR_TXRX_SHARED)])
-        self._tsch_addCells(self._myNeigbors(),[(2,0,self.DIR_TXRX_SHARED)])
-        self._tsch_addCells(self._myNeigbors(),[(3,0,self.DIR_TXRX_SHARED)])
-        self._tsch_addCells(self._myNeigbors(),[(4,0,self.DIR_TXRX_SHARED)])
+        #self._tsch_addCells(self._myNeigbors(),[(1,0,self.DIR_TXRX_SHARED)])
+        #self._tsch_addCells(self._myNeigbors(),[(2,0,self.DIR_TXRX_SHARED)])
+        #self._tsch_addCells(self._myNeigbors(),[(3,0,self.DIR_TXRX_SHARED)])
+        #self._tsch_addCells(self._myNeigbors(),[(4,0,self.DIR_TXRX_SHARED)])
 
         # RPL
         self._rpl_schedule_sendDIO(firstDIO=True)

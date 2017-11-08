@@ -23,7 +23,7 @@ do
 
    #mkdir simData_sf0_rpl_$rpl\_otf_$otf\_sixtop_$sixtop 2&>/dev/null
    #mkdir simData_sf0_rpl_$rpl\-otf_$otf\-sixtop_$sixtop/simData_numMotes_$nodes 2&>/dev/null
-   namedir="simData_sf0_rpl_"$rpl"_otf_"$otf"_sixtop_$sixtop"
+   namedir="simData/journal"
    #namedirsub="simData_sf0_rpl_"$rpl"_otf_"$otf"_sixtop_"$sixtop"/simdata_numMotes_$nodes"
    #echo $namedir
    #echo $namedirsub
@@ -33,6 +33,14 @@ do
    #mkdir topology-simData_$scheduler-$mobility\-hops$maxnumhops\-deBrasCells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop\_trafficType_$trafficType/maxNumHops_$maxnumhops\_mobilityModel_$mobility\_numDeBraSCells_$numBr\_numMotes_$nodes\_numRadios_$numRadios\_scheduler_$scheduler\_topology_$topo
 
    #echo "$namedirsub $nodes $rpl $otf $sixtop"
+   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python duplicate_cpus.py $namedir
    python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
    python duplicate_cpus.py $namedir
 

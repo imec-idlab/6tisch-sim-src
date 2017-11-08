@@ -23,7 +23,7 @@ def parse(filename):
     #print listOfFiles
     for filename in listOfFiles:
 	if len(filename)!=0:
-		print filename
+		
 		fa=filename.split('cpu')[0]
 		fb=filename.split('cpu')[1]
 
@@ -34,6 +34,7 @@ def parse(filename):
 		command="mv "
     		args='{0} {1}'.format(filename,newname)
 		os.popen(command+args)
+		print newname
 
 if __name__ == '__main__':
 	parse(sys.argv[1])

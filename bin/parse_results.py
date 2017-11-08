@@ -74,7 +74,7 @@ def parse(filename):
 		PERBroad=[]   #not used here
 		otf_messages=[]
 		avgsixtopdelay=[]
-		
+		batteryPerNode=[]
 	    
 
             infile = open(filename, 'r')
@@ -148,6 +148,7 @@ def parse(filename):
 
 		    rowInit=i+1		
 		    columnExperimentInit=vals.index("zExperimentInit")-1
+		    columnChargeConsumed=vals.index("chargeConsumed")-1
 		    lengthData=columnExperimentInit+1
 
 		   
@@ -175,11 +176,16 @@ def parse(filename):
 			OL.append(float(vals[-1])*128*8/(numMotes-1)/numCyclesPerRun)
 		    if firstChar=='#PktReceived':
 			throughput.append(float(vals[-1])*128*8/(numMotes-1)/numCyclesPerRun)
+		    if firstChar=='#aveChargePerCycle':
+			for a in line.split('@'):
+			    if a.split()[0]!="#aveChargePerCycle":
+			        batteryPerNode.append(float(a.split()[0]))
 
 		##get the initial value of when the experiment started
 		if defaultInitExp==0:
 		    if rowInitExperiment==0 and len(vals)==lengthData:            
-			defaultInitExp=vals[columnExperimentInit]			      
+			defaultInitExp=vals[columnExperimentInit]
+					      
 		
 		if not endOfData:
 	
@@ -193,20 +199,28 @@ def parse(filename):
 				avgsixtopdelay.append(float(vals[6])*0.01)
 
 		##Parse the dumps of the experiment
-		if len(vals) == lengthData and defaultInitExp!=vals[columnExperimentInit]:	
+		if len(vals) == lengthData and defaultInitExp!=vals[columnExperimentInit]:
+		    #first value of the experiment	
 		    if rowInitExperiment==0:
 		        rowInitExperiment=i
+			initCharge=vals[columnChargeConsumed]
+			#print "aaa "+str(vals[columnChargeConsumed])
+
+		    
+#		    if i==rowInitExperiment:
+#			print "aaa "+str(vals[columnChargeConsumed])
+
 
 		    #print vals
 
 
 		    #print last dump row
 		    if i==rowInitExperiment+numCyclesPerRun:
-			battery_values.append(float(line.split()[7]))
-			   
-
-		
-
+			battery_values.append(float(vals[columnChargeConsumed])-float(initCharge))
+			print "init "+str(initCharge)
+			print "end "+str(vals[columnChargeConsumed])
+			print "diff "+str(float(vals[columnChargeConsumed])-float(initCharge))
+			print "per node "+str((float(vals[columnChargeConsumed])-float(initCharge))/numMotes)
 		
 		    
 
@@ -387,7 +401,7 @@ def parse(filename):
 
 	        i+=1
 	    #data_dict[int(nodes)]=(OL,throughput,PER,TXpkt,RXpkt,(np.mean(collisionDrops)/np.mean(numTx)),(np.mean(propagationDrops)/np.mean(numTx)),dropsMAC,dropsAPP,delay,battery,avgHops,rplParentChanges,avgEffectiveCollided,numTx,numRx,usedCells,reqCells,randomSelections,txbroad,rxbroad)
-	    data_dict[int(nodes)]=(OL,throughput,PER,TXpkt,RXpkt,collisionDrops,propagationDrops,dropsMAC,dropsAPP,delay,battery,avgHops,rplParentChanges,avgEffectiveCollided,numTx,numRx,usedCells,reqCells,randomSelections,txbroad,rxbroad,otf_messages,avgHopsTopo,joiningTime,allNodesHaveCellsTime,allNodesSendingTime,avgNeighbors,avgsixtopdelay)    	       	    
+	    data_dict[int(nodes)]=(OL,throughput,PER,TXpkt,RXpkt,collisionDrops,propagationDrops,dropsMAC,dropsAPP,delay,battery,avgHops,rplParentChanges,avgEffectiveCollided,numTx,numRx,usedCells,reqCells,randomSelections,txbroad,rxbroad,otf_messages,avgHopsTopo,joiningTime,allNodesHaveCellsTime,allNodesSendingTime,avgNeighbors,avgsixtopdelay,batteryPerNode)    	       	    
 
 #data.append([(nodes,throughput)])
 
@@ -418,7 +432,7 @@ def plot_image(parsed_data,filenumber, column):
         yerr=[]
 
 
-        parameter_translator={1: ['0','OL'], 2: ['1','Throughput'], 3: ['x','PER'], 4: ['3','TXpkts'],5: ['4','RXpkts'],6: ['5','dropsCollisions'],7: ['6','dropsPorpagation'],8: ['7','dropsMAC'],9: ['8','dropsAPP'],10: ['10','battery'],11: ['11','avgHops'],12: ['12','rplChanges'],13: ['13','effectiveCollided'],14: ['14','numTx'],15: ['15','numRx'],16: ['x','RTX'],17: ['16','usedCells'],18: ['17','ReqCells'],19: ['18','RandomSelection'],20: ['19','txbroad'],21: ['20','rxbroad'],22: ['x','PERBroad'],23: ['9','delay'], 24: ['21','otfMessages'], 25: ['x','PERDropColl'], 26: ['x','PERDropProp'],27: ['22','aveHopsTopo'],28: ['23','joiningTime'],29:['24','AllNodesHaveTxCellsTime'],30:['25','AllNodesSendingTime'],31:['26','avgNeighbors'],32:['27','avgsixtopdelay'] }
+        parameter_translator={1: ['0','OL'], 2: ['1','Throughput'], 3: ['x','PER'], 4: ['3','TXpkts'],5: ['4','RXpkts'],6: ['5','dropsCollisions'],7: ['6','dropsPorpagation'],8: ['7','dropsMAC'],9: ['8','dropsAPP'],10: ['10','battery'],11: ['11','avgHops'],12: ['12','rplChanges'],13: ['13','effectiveCollided'],14: ['14','numTx'],15: ['15','numRx'],16: ['x','RTX'],17: ['16','usedCells'],18: ['17','ReqCells'],19: ['18','RandomSelection'],20: ['19','txbroad'],21: ['20','rxbroad'],22: ['x','PERBroad'],23: ['9','delay'], 24: ['21','otfMessages'], 25: ['x','PERDropColl'], 26: ['x','PERDropProp'],27: ['22','aveHopsTopo'],28: ['23','joiningTime'],29:['24','AllNodesHaveTxCellsTime'],30:['25','AllNodesSendingTime'],31:['26','avgNeighbors'],32:['27','avgsixtopdelay'],33:['28','batteryPerNode'] }
 
 
 
@@ -448,11 +462,12 @@ def plot_image(parsed_data,filenumber, column):
 
 		lenSets=[len(item3[1][1]) for item3 in data]
 		for item2 in data:	
-			print "For value data "+str(item2[1][int(parameter_translator[int(10)][0])])
+			print "For value data "+str(item2[1][int(parameter_translator[int(column)][0])])
 		data_to_plot.append([np.mean(item[1][int(parameter_translator[int(column)][0])]) for item in data])
 		
 		yerr.append([sqrt(np.var(item[1][int(parameter_translator[int(column)][0])])) for item in data])
 		   
+		print data_to_plot
 
 		return x, data_to_plot,yerr,parameter_translator[int(column)][1]
 	else:
@@ -615,7 +630,7 @@ def write_in_file(namefile,data_dict,fileset):
 	brcells=fileset.split("_")[1].split("-")[3]
 	text=[algth,mobi,hops,brcells,""]
 	spamwriter.writerow(text)
-	content=["Nodes","OL","Throughput","PER","TX","RX","DropsCollisions","dropsPropagation","DropsMAC","DropsAPP","battery","avgHops","rplChanges","avgEffectiveCollided","numTx","numRx","avgRTX","usedCells","ReqCells","randomSelections","txbroad","rxbroad","PERBroad","delay","otfmessages","HopsTopo","joiningTime","allNodesHaveCellsTime","allNodesSendingTime","avgNeighbors","avgsixtopdelay"]
+	content=["Nodes","OL","Throughput","PER","TX","RX","DropsCollisions","dropsPropagation","DropsMAC","DropsAPP","battery","avgHops","rplChanges","avgEffectiveCollided","numTx","numRx","avgRTX","usedCells","ReqCells","randomSelections","txbroad","rxbroad","PERBroad","delay","otfmessages","HopsTopo","joiningTime","allNodesHaveCellsTime","allNodesSendingTime","avgNeighbors","avgsixtopdelay","batteryPerNode"]
 	
 
 
@@ -629,7 +644,7 @@ def write_in_file(namefile,data_dict,fileset):
 		if data_to_write[20][i]<0:
 			data_to_write[20][i]=0
 
-		content=[numNodes[i],data_to_write[0][i],data_to_write[1][i],data_to_write[2][i],data_to_write[3][i],data_to_write[4][i],data_to_write[5][i],data_to_write[6][i],data_to_write[7][i],data_to_write[8][i],data_to_write[9][i],data_to_write[10][i],data_to_write[11][i],data_to_write[12][i],data_to_write[13][i],data_to_write[14][i],data_to_write[15][i],data_to_write[16][i],data_to_write[17][i],data_to_write[18][i],data_to_write[19][i],data_to_write[20][i],data_to_write[21][i],data_to_write[22][i],data_to_write[23][i],data_to_write[24][i],data_to_write[25][i],data_to_write[26][i],data_to_write[27][i],data_to_write[28][i]]
+		content=[numNodes[i],data_to_write[0][i],data_to_write[1][i],data_to_write[2][i],data_to_write[3][i],data_to_write[4][i],data_to_write[5][i],data_to_write[6][i],data_to_write[7][i],data_to_write[8][i],data_to_write[9][i],data_to_write[10][i],data_to_write[11][i],data_to_write[12][i],data_to_write[13][i],data_to_write[14][i],data_to_write[15][i],data_to_write[16][i],data_to_write[17][i],data_to_write[18][i],data_to_write[19][i],data_to_write[20][i],data_to_write[21][i],data_to_write[22][i],data_to_write[23][i],data_to_write[24][i],data_to_write[25][i],data_to_write[26][i],data_to_write[27][i],data_to_write[28][i],data_to_write[29][i]]
 	
 		spamwriter.writerow(content)
  
@@ -655,7 +670,7 @@ def print_help():
 	print "OL"
 	print "Throughput"
 
-	parameter_translator={1: ['0','OL'], 2: ['1','Throughput'], 3: ['x','PER'], 4: ['3','TXpkts'],5: ['4','RXpkts'],6: ['5','dropsCollisions'],7: ['6','dropsPorpagation'],8: ['7','dropsMAC'],9: ['8','dropsAPP'],10: ['10','battery'],11: ['11','avgHops'],12: ['12','rplChanges'],13: ['13','effectiveCollided'],14: ['14','numTx'],15: ['15','numRx'],16: ['x','RTX'],17: ['16','usedCells'],18: ['17','ReqCells'],19: ['18','RandomSelection'],20: ['19','txbroad'],21: ['20','rxbroad'],22: ['x','PERBroad'],23: ['9','delay'], 24: ['21','otfMessages'], 25: ['x','PERDropColl'], 26: ['x','PERDropProp'],27: ['22','aveHopsTopo'], 28: ['23','joiningTime'],29:['24','AllNodesHaveTxCellsTime'],30:['25','AllNodesSendingTime'],31:['26','avgNeighbors'],32:['27','avgsixtopdelay']}
+	parameter_translator={1: ['0','OL'], 2: ['1','Throughput'], 3: ['x','PER'], 4: ['3','TXpkts'],5: ['4','RXpkts'],6: ['5','dropsCollisions'],7: ['6','dropsPorpagation'],8: ['7','dropsMAC'],9: ['8','dropsAPP'],10: ['10','battery'],11: ['11','avgHops'],12: ['12','rplChanges'],13: ['13','effectiveCollided'],14: ['14','numTx'],15: ['15','numRx'],16: ['x','RTX'],17: ['16','usedCells'],18: ['17','ReqCells'],19: ['18','RandomSelection'],20: ['19','txbroad'],21: ['20','rxbroad'],22: ['x','PERBroad'],23: ['9','delay'], 24: ['21','otfMessages'], 25: ['x','PERDropColl'], 26: ['x','PERDropProp'],27: ['22','aveHopsTopo'], 28: ['23','joiningTime'],29:['24','AllNodesHaveTxCellsTime'],30:['25','AllNodesSendingTime'],31:['26','avgNeighbors'],32:['27','avgsixtopdelay'],33:['28','batteryPerNode']}
 	#parameter_translator={1: ['0','OL'], 2: ['1','Throughput']}
 	for col in parameter_translator.items():
 		print str(col[0])+" "+str(col[1][1])
@@ -665,7 +680,7 @@ if __name__ == '__main__':
     
 
 
-
+    parameter_translator={1: ['0','OL'], 2: ['1','Throughput'], 3: ['x','PER'], 4: ['3','TXpkts'],5: ['4','RXpkts'],6: ['5','dropsCollisions'],7: ['6','dropsPorpagation'],8: ['7','dropsMAC'],9: ['8','dropsAPP'],10: ['10','battery'],11: ['11','avgHops'],12: ['12','rplChanges'],13: ['13','effectiveCollided'],14: ['14','numTx'],15: ['15','numRx'],16: ['x','RTX'],17: ['16','usedCells'],18: ['17','ReqCells'],19: ['18','RandomSelection'],20: ['19','txbroad'],21: ['20','rxbroad'],22: ['x','PERBroad'],23: ['9','delay'], 24: ['21','otfMessages'], 25: ['x','PERDropColl'], 26: ['x','PERDropProp'],27: ['22','aveHopsTopo'], 28: ['23','joiningTime'],29:['24','AllNodesHaveTxCellsTime'],30:['25','AllNodesSendingTime'],31:['26','avgNeighbors'],32:['27','avgsixtopdelay'],33:['28','batteryPerNode']}
     
 
 #    y_values=[e for number in xrange(2)]
@@ -736,6 +751,8 @@ if __name__ == '__main__':
 
 			nodes=[keys for keys in parsed_data[0].keys()]
 			print "Parse done. There are nodes: "+str(max(nodes))	
+
+
 			#print parsed_data[0][32]
 			for i in range(len(sys.argv)-3):	
 				[x,y_values[i],yerr_values[i],title]=plot_image(parsed_data,i, sys.argv[2] )		
@@ -754,7 +771,7 @@ if __name__ == '__main__':
 			if maxYvalue==0:
 				plt.ylim(0, 1)
 			else:
-				plt.ylim(0, float(maxYvalue)*1.1)
+				plt.ylim(0, float(maxYvalue)*2)
 		        #plt.ylim(0, 10)
 			#plt.xlim(0, max(nodes))
 			plt.xlim(0, 25)
@@ -874,7 +891,7 @@ if __name__ == '__main__':
 		print "There are files: "+str(len(sys.argv)-3)
 		if len(sys.argv) < 4:
 			print_help()
-		elif int(sys.argv[2]) == 0 or int(sys.argv[2]) > 28:
+		elif int(sys.argv[2]) == 0 or int(sys.argv[2]) > 33:
 			print "Parameter "+str(sys.argv[2])+" not available"
 			print_help()
 		else:	
@@ -899,10 +916,14 @@ if __name__ == '__main__':
 				nodes=[keys for keys in parsed_data[i].keys()]
 				print "Parse done. There are nodes: "+str(max(nodes))	
 
-				val=int(sys.argv[2])-1
+				#val=int(sys.argv[2])
+				val=int(parameter_translator[int(sys.argv[2])][0])
 				print "Parameter "+str(val)
-				print parsed_data[0][max(nodes)][val]
 
+				print nodes
+
+				
+				print parsed_data[0][max(nodes)][val]
 				#for 868MHz, only 64 for byte size packets
 				j=0
 				for valu in parsed_data[i][max(nodes)][val]:
@@ -910,17 +931,18 @@ if __name__ == '__main__':
 					j+=1
 				
 
-							
+				#print parsed_data[i]			
 				data = parsed_data[i][max(nodes)][val]
 				
 				N=len(parsed_data[i][max(nodes)][val])
-				print data
+				#print data
 
 				# sort the data:
 				data_sorted = np.sort(data)
-
+				
 				# calculate the proportional values of samples
 				p = 1. * np.arange(len(data)) / (len(data) - 1)
+				print p
 
 				# plot the sorted data:
 				#values.append(data_sorted)
@@ -933,8 +955,8 @@ if __name__ == '__main__':
 
 			plt.ylabel('CDF',fontsize=50)
 			plt.xlabel('Number of drops (pkts)',fontsize=50)
-			plt.xticks([0,10000,20000,30000,40000,50000,60000,70000], ['0', '100k', '200k', '300k','400k','500k','600k','700k'],fontsize=30)
-			plt.yticks([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1], ['0', '0.1', '0.2', '0.3','0.4','0.5','0.6','0.7','0.8','0.9','1'],fontsize=25)
+			#plt.xticks([0,100000,200000,300000,400000,500000,600000,700000], ['0', '100k', '200k', '300k','400k','500k','600k','700k'],fontsize=30)
+			#plt.yticks([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1], ['0', '0.1', '0.2', '0.3','0.4','0.5','0.6','0.7','0.8','0.9','1'],fontsize=25)
 			#plt.legend( loc=0, borderaxespad=0.)
 			ax.legend(loc='center', bbox_to_anchor=(0.85, 0.2),ncol=1, fancybox=True, shadow=True,prop={'size':30},)
 			plt.show()

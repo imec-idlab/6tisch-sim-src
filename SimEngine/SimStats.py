@@ -96,9 +96,13 @@ class SimStats(object):
 
         cycle = int(self.engine.getAsn()/self.settings.slotframeLength)
 
+	synced = len([mote.id for mote in self.engine.motes if mote.isSync == True])
+	joined = len([mote.id for mote in self.engine.motes if mote.isJoined == True])
+	bootstrapped = len([mote.id for mote in self.engine.motes if mote.isBootstrapped == True])
+
         # print
         #if self.settings.cpuID==None:
-        print('   cycle: {0}/{1}'.format(cycle,self.settings.numCyclesPerRun-1))
+        print('   cycle: {0}/{1} sync: {2}/{3} join: {4}/{5} bootstrapped: {6}/{7}'.format(cycle,self.settings.numCyclesPerRun-1,synced,self.settings.numMotes,joined,self.settings.numMotes,bootstrapped,self.settings.numMotes))
 
         # write statistics to output file
         self._fileWriteStats(
@@ -269,7 +273,7 @@ class SimStats(object):
         output += [
             '#aveChargePerCycle runNum={0} {1}'.format(
                 self.runNum,
-                ' '.join(['{0}@{1:.2f}'.format(mote.id,(mote.getMoteStats()['chargeConsumed']-self.engine.startCharge[mote.id])/self.settings.numCycles) for mote in self.engine.motes])
+                ' '.join(['{0}@{1:.2f}'.format(mote.id,(mote.getMoteStats()['chargeConsumed']-self.engine.startCharge[mote.id])/self.settings.numCyclesPerRun) for mote in self.engine.motes])
             )
         ]
 	pgen=0

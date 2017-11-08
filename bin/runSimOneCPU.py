@@ -77,7 +77,7 @@ def parseCliOptions():
     parser.add_argument('--simDataDir',
         dest       = 'simDataDir',
         type       = str,
-        default    = 'simData',
+        default    = 'simData/journal',
         help       = '[simulation] Simulation log directory.',
     )
     # topology
@@ -169,7 +169,7 @@ def parseCliOptions():
     parser.add_argument( '--dioPeriod',
         dest       = 'dioPeriod',
         type       = float,
-        default    = 10.0,
+        default    = 30.0,
         help       = '[rpl] DIO period (s).',
     )
     parser.add_argument( '--daoPeriod',
@@ -183,13 +183,13 @@ def parseCliOptions():
         dest       = 'otfThreshold',
         nargs      = '+',
         type       = int,
-        default    = 1,
+        default    = 4,
         help       = '[otf] OTF threshold (cells).',
     )
     parser.add_argument( '--otfHousekeepingPeriod',
         dest       = 'otfHousekeepingPeriod',
         type       = float,
-        default    = 5.0,
+        default    = 10.0,
         help       = '[otf] OTF housekeeping period (s).',
     )
     # sixtop
@@ -202,7 +202,7 @@ def parseCliOptions():
     parser.add_argument( '--sixtopHousekeepingPeriod',
         dest       = 'sixtopHousekeepingPeriod',
         type       = float,
-        default    = 1.0,
+        default    = 10.0,
         help       = '[6top] 6top housekeeping period (s).',
     )
     parser.add_argument( '--sixtopPdrThreshold',
@@ -243,7 +243,7 @@ def parseCliOptions():
         dest       = 'beaconPeriod',
         nargs      = '+',
         type       = float,
-        default    = 2.0,
+        default    = 10.0,
         help       = '[tsch] Enhanced Beacon period (s).',
     )
     # Bayesian broadcast algorithm
@@ -309,7 +309,7 @@ def parseCliOptions():
     parser.add_argument('--topology',
         dest       = 'topology',
         type       = str,
-        default    = 'random',
+        default    = 'grid',
         help       = 'The structure of the topology.',
     )
     options        = parser.parse_args()
