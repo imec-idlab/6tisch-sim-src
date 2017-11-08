@@ -183,7 +183,7 @@ def parseCliOptions():
         dest       = 'otfThreshold',
         nargs      = '+',
         type       = int,
-        default    = 4,
+        default    = 2,
         help       = '[otf] OTF threshold (cells).',
     )
     parser.add_argument( '--otfHousekeepingPeriod',
