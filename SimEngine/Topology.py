@@ -272,12 +272,18 @@ class Topology(object):
                     cm.setRSSI(mote, rssi)
 
                     if SimSettings.SimSettings().subGHz:
+                        #if rssi>self.STABLE_RSSI_subGHz and cm.id == 0:
                         if rssi>self.STABLE_RSSI_subGHz:
                             numStableNeighbors += 1
+			    pdr = self._computePDR(cm,mote)
+                            print 'Mote %d (RSSI %.4f) - Stable RSSI %.4f - other mote %d (RSSI %.4f) --> PDR = %.4f' % (mote.id, rssi, self.STABLE_RSSI_GHz, cm.id, rssi, pdr)
                     else:
-                        print 'Mote %d (RSSI %.4f) - Stable RSSI %.4f - other mote %d (RSSI %.4f)' % (mote.id, rssi, self.STABLE_RSSI_GHz, cm.id, rssi)
+                        #if rssi>self.STABLE_RSSI_GHz and cm.id == 0:
                         if rssi>self.STABLE_RSSI_GHz:
                             numStableNeighbors += 1
+			    pdr = self._computePDR(cm,mote)
+                            print 'Mote %d (RSSI %.4f) - Stable RSSI %.4f - other mote %d (RSSI %.4f) --> PDR = %.4f' % (mote.id, rssi, self.STABLE_RSSI_GHz, cm.id, rssi, pdr)
+                            
 
                 # make sure it is connected to at least STABLE_NEIGHBORS motes
                 # or connected to all the currently deployed motes when the number of deployed motes

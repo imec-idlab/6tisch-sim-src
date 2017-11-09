@@ -33,7 +33,7 @@ def parse(filename):
 	    
 	    print "Filtering: "+str(filename)
 	    
-            nodes=int(filename.split("/")[1].split("_")[1])
+            nodes=int(filename.split("/")[2].split("_")[1])
 	    print "NODES "+str(nodes)
 
 	    
@@ -86,7 +86,7 @@ def parse(filename):
 	    rpl_values=None
 
 	    battery_values=[]
-	    avgHops_values=None
+	    avgHops_values=[]
 	    avgHopsTopo_values=None
 	    avgEffectiveCollided_values=None
 	    usedCells_values=0
@@ -149,6 +149,7 @@ def parse(filename):
 		    rowInit=i+1		
 		    columnExperimentInit=vals.index("zExperimentInit")-1
 		    columnChargeConsumed=vals.index("chargeConsumed")-1
+		    columnAveHops=vals.index("aveHops")-1
 		    lengthData=columnExperimentInit+1
 
 		   
@@ -170,7 +171,7 @@ def parse(filename):
 		if rowInitExperiment!=0 and i>=rowInitExperiment+numCyclesPerRun-1:
 		    
 		    if endOfData==False:
-			print "Finish dump!"
+			#print "Finish dump!"
 			endOfData=True
 		    if firstChar=='#PktGen':
 			OL.append(float(vals[-1])*128*8/(numMotes-1)/numCyclesPerRun)
@@ -209,9 +210,10 @@ def parse(filename):
 		    
 #		    if i==rowInitExperiment:
 #			print "aaa "+str(vals[columnChargeConsumed])
-
-
 		    #print vals
+		    if int(float(vals[columnAveHops]))>0:
+			avgHops_values.append(int(float(vals[columnAveHops])))
+		    
 
 
 		    #print last dump row
@@ -397,7 +399,10 @@ def parse(filename):
 		if battery_values!=[]:
 			battery_values=[num for num in battery_values if num ]	
 			battery.append(np.mean(battery_values)/numMotes)
-			battery_values=[]		
+			battery_values=[]
+
+		if len(avgHops_values)>0:
+			avgHops.append(sum(avgHops_values) / float(len(avgHops_values)))
 
 	        i+=1
 	    #data_dict[int(nodes)]=(OL,throughput,PER,TXpkt,RXpkt,(np.mean(collisionDrops)/np.mean(numTx)),(np.mean(propagationDrops)/np.mean(numTx)),dropsMAC,dropsAPP,delay,battery,avgHops,rplParentChanges,avgEffectiveCollided,numTx,numRx,usedCells,reqCells,randomSelections,txbroad,rxbroad)
@@ -408,7 +413,7 @@ def parse(filename):
 
 			
     print "End parsing"
-    print data_dict
+    #print data_dict
 
     
 
@@ -696,7 +701,7 @@ if __name__ == '__main__':
     legend_dic={0: '1 Radio Sim', 1: '4 Radios Sim',2: '8 Radios Sim',3: '16 Radios Sim',4: '1 Radio Model',5: '4 Radios Model',6: '8 Radios Model',7: '16 Radios Model',8: 'debras8',9: 'debras9',10: 'debras10',11: 'opt2'} #4 # 5
     #legend_dic={0: 'Centralized', 1: 'Decentralized'} #6
     #legend_dic={0: 'OTF-sf0 Multichannel', 1: 'DeBraS Multichannel NumBr=6',2: 'Quasi-opimal Multichannel',3: 'DeBraS Multichannel NumBr=6'} #3
-    legend_dic={0:'Constant SF0',1: 'Constant llsf', 2:'Pareto SF0', 3:'Pareto DeBraS',4:'Bursty SF0',5:'Bursty DeBraS'}
+    legend_dic={0:'868 MHz',1: '2.4 GHz', 2:'Pareto SF0', 3:'Pareto DeBraS',4:'Bursty SF0',5:'Bursty DeBraS'}
     print sys.argv
 
     if len(sys.argv) >= 2:
@@ -881,7 +886,7 @@ if __name__ == '__main__':
 	elif sys.argv[1] == 'cdf': 
 
 		#fig, ax = plt.subplots(figsize=(8, 4))
-		colors={0: 'blue',1: 'red',2: 'black',3: 'green',4: 'pink',5: 'purple',6: 'orange',}
+		colors={0: 'green',1: 'red',2: 'blue',3: 'green',4: 'pink',5: 'purple',6: 'orange',}
 		print "Starting to plot..."
 		y_values=[e for number in xrange(len(sys.argv)-2)]
    		yerr_values=[e for number in xrange(len(sys.argv)-2)]
@@ -900,6 +905,7 @@ if __name__ == '__main__':
 			ax=plt.subplot(111)
 			i=0
 			for i in range(len(sys.argv)-3):
+				print '\r\n'
 				print "Reading file: "+sys.argv[i+3];
 				#print i
 				m=sys.argv[i+3].split('/')
@@ -918,12 +924,16 @@ if __name__ == '__main__':
 
 				#val=int(sys.argv[2])
 				val=int(parameter_translator[int(sys.argv[2])][0])
+
 				print "Parameter "+str(val)
 
 				print nodes
 
+				print parsed_data[0]
+				print parsed_data[0][max(nodes)]
+
 				
-				print parsed_data[0][max(nodes)][val]
+
 				#for 868MHz, only 64 for byte size packets
 				j=0
 				for valu in parsed_data[i][max(nodes)][val]:
@@ -948,17 +958,18 @@ if __name__ == '__main__':
 				#values.append(data_sorted)
 				#pvalues.append(p)
 				#plt.plot(data_sorted,p,c=colors_dict[i],label=legend_dic[i])
-				plt.plot(data_sorted,p,colors_dic[i],label=legend_dic[i],markersize=14)
+				plt.plot(data_sorted,p,colors[i],label=legend_dic[i],marker="o")
 				
 			plt.ylim(0, 1)
 			#plt.xlim(0, 400000)
 
-			plt.ylabel('CDF',fontsize=50)
-			plt.xlabel('Number of drops (pkts)',fontsize=50)
+			plt.ylabel('CDF',fontsize=25)
+			plt.xlabel('Charge consumed ($\mu$C)',fontsize=25)
 			#plt.xticks([0,100000,200000,300000,400000,500000,600000,700000], ['0', '100k', '200k', '300k','400k','500k','600k','700k'],fontsize=30)
 			#plt.yticks([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1], ['0', '0.1', '0.2', '0.3','0.4','0.5','0.6','0.7','0.8','0.9','1'],fontsize=25)
 			#plt.legend( loc=0, borderaxespad=0.)
-			ax.legend(loc='center', bbox_to_anchor=(0.85, 0.2),ncol=1, fancybox=True, shadow=True,prop={'size':30},)
+			#ax.legend(loc='best', bbox_to_anchor=(0.85, 0.2),ncol=1, fancybox=True, prop={'size':30},)
+			ax.legend(loc='lower right', prop={'size':20},)
 			plt.show()
 			
 	else:

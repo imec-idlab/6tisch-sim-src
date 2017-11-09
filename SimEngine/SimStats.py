@@ -119,7 +119,7 @@ class SimStats(object):
 	# temp hack
 	if self.engine.removeSharedCells == True:
             for mote in self.engine.motes:
-		for ts in range(1,5):
+		for ts in range(1,10):
 		    mote.schedule.pop(ts)
 	    self.engine.removeSharedCells = False
 

@@ -147,7 +147,7 @@ class Mote(object):
 #    CHARGE_IdleNotSync_uC              = 45.0
 
 ##2.4GHz
-    CHARGE_Idle_uC                     = 184.19
+    CHARGE_Idle_uC                     = 229.61
     CHARGE_TxDataRxAck_uC              = 283.34
     CHARGE_TxData_uC                   = 262.07
     CHARGE_RxDataTxAck_uC              = 287.41
@@ -155,7 +155,7 @@ class Mote(object):
     CHARGE_IdleNotSync_uC              = 229.61
 
 #868MHz
-#    CHARGE_Idle_uC                     = 183.63
+#    CHARGE_Idle_uC                     = 260.97
 #    CHARGE_TxDataRxAck_uC              = 446.72
 #    CHARGE_TxData_uC                   = 386.76
 #    CHARGE_RxDataTxAck_uC              = 458.68
@@ -2358,7 +2358,7 @@ class Mote(object):
                     self.backoff -= 1
                 # send packet
                 if self.pktToSend:
-		    print 'packet type: %d - %s' % (self.id, pkt['type'])
+		    #print 'packet type: %d - %s' % (self.id, pkt['type'])
                     cell['numTx'] += 1
 
                     if pkt['type']==self.IANA_6TOP_TYPE_REQUEST:
@@ -2732,6 +2732,7 @@ class Mote(object):
                 if (dstIp == self.BROADCAST_ADDRESS):
                     if (type == self.RPL_TYPE_DIO):
                         # got a DIO
+			#if smac.id == 0:
                         self._rpl_action_receiveDIO(type, smac, payload)
 
                         (isACKed, isNACKed) = (False, False)
@@ -2934,6 +2935,11 @@ class Mote(object):
         self._tsch_addCells(self._myNeigbors(),[(2,0,self.DIR_TXRX_SHARED)])
         self._tsch_addCells(self._myNeigbors(),[(3,0,self.DIR_TXRX_SHARED)])
         self._tsch_addCells(self._myNeigbors(),[(4,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(5,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(6,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(7,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(8,0,self.DIR_TXRX_SHARED)])
+        self._tsch_addCells(self._myNeigbors(),[(9,0,self.DIR_TXRX_SHARED)])
 
         # RPL
         self._rpl_schedule_sendDIO(firstDIO=True)
