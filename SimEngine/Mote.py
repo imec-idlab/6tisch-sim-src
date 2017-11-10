@@ -147,20 +147,20 @@ class Mote(object):
 #    CHARGE_IdleNotSync_uC              = 45.0
 
 ##2.4GHz
-    CHARGE_Idle_uC                     = 229.61
-    CHARGE_TxDataRxAck_uC              = 283.34
-    CHARGE_TxData_uC                   = 262.07
-    CHARGE_RxDataTxAck_uC              = 287.41
-    CHARGE_RxData_uC                   = 265.39
-    CHARGE_IdleNotSync_uC              = 229.61
+#    CHARGE_Idle_uC                     = 229.61
+#    CHARGE_TxDataRxAck_uC              = 283.34
+#    CHARGE_TxData_uC                   = 262.07
+#    CHARGE_RxDataTxAck_uC              = 287.41
+#    CHARGE_RxData_uC                   = 265.39
+#    CHARGE_IdleNotSync_uC              = 229.61
 
 #868MHz
-#    CHARGE_Idle_uC                     = 260.97
-#    CHARGE_TxDataRxAck_uC              = 446.72
-#    CHARGE_TxData_uC                   = 386.76
-#    CHARGE_RxDataTxAck_uC              = 458.68
-#    CHARGE_RxData_uC                   = 399.98
-#    CHARGE_IdleNotSync_uC              = 260.97
+    CHARGE_Idle_uC                     = 260.97
+    CHARGE_TxDataRxAck_uC              = 446.72
+    CHARGE_TxData_uC                   = 386.76
+    CHARGE_RxDataTxAck_uC              = 458.68
+    CHARGE_RxData_uC                   = 399.98
+    CHARGE_IdleNotSync_uC              = 260.97
 
 
 

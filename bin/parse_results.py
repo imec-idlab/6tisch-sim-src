@@ -885,7 +885,7 @@ if __name__ == '__main__':
 
 	elif sys.argv[1] == 'cdf': 
 
-		#fig, ax = plt.subplots(figsize=(8, 4))
+		
 		colors={0: 'green',1: 'red',2: 'blue',3: 'green',4: 'pink',5: 'purple',6: 'orange',}
 		print "Starting to plot..."
 		y_values=[e for number in xrange(len(sys.argv)-2)]
@@ -901,9 +901,10 @@ if __name__ == '__main__':
 			print_help()
 		else:	
 			parsed_data=[]
-		        fig=plt.figure()
+		        fig, ax = plt.subplots(figsize=(6.5, 3.5))
 			ax=plt.subplot(111)
 			i=0
+			lines=['-', '--']
 			for i in range(len(sys.argv)-3):
 				print '\r\n'
 				print "Reading file: "+sys.argv[i+3];
@@ -929,8 +930,8 @@ if __name__ == '__main__':
 
 				print nodes
 
-				print parsed_data[0]
-				print parsed_data[0][max(nodes)]
+				#print parsed_data[0]
+				#print parsed_data[0][max(nodes)]
 
 				
 
@@ -958,19 +959,20 @@ if __name__ == '__main__':
 				#values.append(data_sorted)
 				#pvalues.append(p)
 				#plt.plot(data_sorted,p,c=colors_dict[i],label=legend_dic[i])
-				plt.plot(data_sorted,p,colors[i],label=legend_dic[i],marker="o")
-				
+				plt.semilogx(data_sorted,p,linestyle=lines[i],color=colors[i],label=legend_dic[i],marker="o", markersize=0)
+
 			plt.ylim(0, 1)
 			#plt.xlim(0, 400000)
 
-			plt.ylabel('CDF',fontsize=25)
-			plt.xlabel('Charge consumed ($\mu$C)',fontsize=25)
+			plt.ylabel('CDF',fontsize=20)
+			plt.xlabel('Charge consumed ($\mu$C)',fontsize=20)
 			#plt.xticks([0,100000,200000,300000,400000,500000,600000,700000], ['0', '100k', '200k', '300k','400k','500k','600k','700k'],fontsize=30)
 			#plt.yticks([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1], ['0', '0.1', '0.2', '0.3','0.4','0.5','0.6','0.7','0.8','0.9','1'],fontsize=25)
 			#plt.legend( loc=0, borderaxespad=0.)
 			#ax.legend(loc='best', bbox_to_anchor=(0.85, 0.2),ncol=1, fancybox=True, prop={'size':30},)
-			ax.legend(loc='lower right', prop={'size':20},)
-			plt.show()
+			ax.legend(loc='lower right', prop={'size':18},)
+			fig.tight_layout()
+			fig.savefig('cdf.pdf')
 			
 	else:
 		

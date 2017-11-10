@@ -71,7 +71,7 @@ def parseCliOptions():
     parser.add_argument( '--numCyclesPerRun',
         dest       = 'numCyclesPerRun',
         type       = int,
-        default    = 300,
+        default    = 21600,
         help       = '[simulation] Duration of a run, in slotframes.',
     )
     parser.add_argument('--simDataDir',
@@ -135,7 +135,7 @@ def parseCliOptions():
         dest       = 'pkPeriod',
         nargs      = '+',
         type       = float,
-        default    = 5,
+        default    = 3600,
         help       = '[app] Average period between two data packets (s).',
     )
     parser.add_argument( '--pkPeriodVar',
@@ -291,7 +291,7 @@ def parseCliOptions():
         dest       = 'subGHz',
         nargs      = '+',
         type       = int,
-        default    = 0,
+        default    = 1,
         help       = '[phy] Enable sub-GHz communication.',
     )
     parser.add_argument('--GHzModel',
