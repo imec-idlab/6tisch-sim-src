@@ -152,6 +152,7 @@ class Mote(object):
 #    CHARGE_RxDataTxAck_uC              = 287.41
 #    CHARGE_RxData_uC                   = 265.39
 #    CHARGE_IdleNotSync_uC              = 229.61
+#    CHARGE_Sleep_uC                    = 5.0
 
 #868MHz
     CHARGE_Idle_uC                     = 260.97
@@ -160,6 +161,7 @@ class Mote(object):
     CHARGE_RxDataTxAck_uC              = 458.68
     CHARGE_RxData_uC                   = 399.98
     CHARGE_IdleNotSync_uC              = 260.97
+    CHARGE_Sleep_uC                    = 5.0
 
 
 
@@ -498,31 +500,8 @@ class Mote(object):
                 if all(mote.isBootstrapped == True for mote in self.engine.motes):
                     for mote in self.engine.motes:
                         self.engine.startCharge[mote.id] = mote.chargeConsumed # save the charge
-			# remove the SHARED cells
-			self.engine.removeSharedCells = True
-                    if self.settings.numCyclesPerRun!=0:
-                        #experiment time in ASNs
-                        simTime=self.settings.numCyclesPerRun*self.settings.slotframeLength
-                        #offset until the end of the current cycle
-                        offset=self.settings.slotframeLength-(self.engine.asn%self.settings.slotframeLength)
-                        #experiment time + offset
-                        delay=simTime+offset
-                    else:
-                        #simulation will finish in the next asn
-                        delay=1
-                    # end the simulation
-                    self.engine.terminateSimulation(delay)
-                    #setting init experiment
-                    self.engine.asnInitExperiment=self.engine.asn+self.settings.slotframeLength-(self.engine.asn%self.settings.slotframeLength)
-
-            if self.engine.asn > self.engine.asnInitExperiment:
-                self.pktGen+=1
-
-            if self.isBootstrapped==False:
-                self.isBootstrapped=True
-                self.firstIsBootstrapped=self.engine.asn
-                # check if all motes are ready, if so, schedule end the simulation
-                if all(mote.isBootstrapped == True for mote in self.engine.motes):
+                        # remove the SHARED cells
+                        self.engine.removeSharedCells = True
                     if self.settings.numCyclesPerRun!=0:
                         #experiment time in ASNs
                         simTime=self.settings.numCyclesPerRun*self.settings.slotframeLength

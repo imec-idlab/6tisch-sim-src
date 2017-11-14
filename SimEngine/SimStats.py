@@ -94,6 +94,12 @@ class SimStats(object):
     def _actionEndCycle(self):
         '''Called at each end of cycle.'''
 
+        for mote in self.engine.motes:
+            nrSleepSlots = self.settings.slotframeLength - len(mote.schedule)
+            consumption = nrSleepSlots * mote.CHARGE_Sleep_uC
+            mote._logChargeConsumed(consumption)
+            # print 'Mote %d, %d/101. SLEEP consumption %.4f' % (mote.id, len(mote.schedule), consumption)
+
         cycle = int(self.engine.getAsn()/self.settings.slotframeLength)
 
         synced = len([mote.id for mote in self.engine.motes if mote.isSync == True])
@@ -115,7 +121,6 @@ class SimStats(object):
                 self._collectScheduleStats().items()
             )
         )
-
 
         # temp hack
     	if self.engine.removeSharedCells == True:
