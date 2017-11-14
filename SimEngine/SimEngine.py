@@ -76,11 +76,11 @@ class SimEngine(threading.Thread):
             self.topology.createTopologyGrid()
 
         self.startCharge               = {}
-	self.removeSharedCells	       = False
+        self.removeSharedCells	       = False
 
-	#not valid values. Will be set by the last mote that becomes ready (finishes bootstrap)
-	self.asnInitExperiment=999999999
-	self.asnEndExperiment=999999999
+        #not valid values. Will be set by the last mote that becomes ready (finishes bootstrap)
+        self.asnInitExperiment=999999999
+        self.asnEndExperiment=999999999
 
         # boot all motes
         for i in range(len(self.motes)):
@@ -110,9 +110,9 @@ class SimEngine(threading.Thread):
 
         # schedule the endOfSimulation event if we are not simulating the join process
         if not self.settings.withJoin and not self.settings.withBootstrap:
-	    if self.settings.numCyclesPerRun==0:
-		#at least min cycle 0
-	        self.settings.numCyclesPerRun=1
+            if self.settings.numCyclesPerRun==0:
+                #at least min cycle 0
+                self.settings.numCyclesPerRun=1
             self.scheduleAtAsn(
                 asn         = self.settings.slotframeLength*self.settings.numCyclesPerRun,
                 cb          = self._actionEndSim,
@@ -208,12 +208,12 @@ class SimEngine(threading.Thread):
 
     #delay in asn
     def terminateSimulation(self,delay):
-	self.asnEndExperiment=self.asn+delay
-	self.scheduleAtAsn(
-		asn         = self.asn+delay,
-		cb          = self._actionEndSim,
-		uniqueTag   = (None,'_actionEndSim'),
-	)
+        self.asnEndExperiment=self.asn+delay
+        self.scheduleAtAsn(
+            asn         = self.asn+delay,
+            cb          = self._actionEndSim,
+            uniqueTag   = (None,'_actionEndSim'),
+        )
 
     #=== play/pause
 

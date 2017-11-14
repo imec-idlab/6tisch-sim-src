@@ -96,9 +96,9 @@ class SimStats(object):
 
         cycle = int(self.engine.getAsn()/self.settings.slotframeLength)
 
-	synced = len([mote.id for mote in self.engine.motes if mote.isSync == True])
-	joined = len([mote.id for mote in self.engine.motes if mote.isJoined == True])
-	bootstrapped = len([mote.id for mote in self.engine.motes if mote.isBootstrapped == True])
+        synced = len([mote.id for mote in self.engine.motes if mote.isSync == True])
+        joined = len([mote.id for mote in self.engine.motes if mote.isJoined == True])
+        bootstrapped = len([mote.id for mote in self.engine.motes if mote.isBootstrapped == True])
 
         # print
         #if self.settings.cpuID==None:
@@ -116,12 +116,13 @@ class SimStats(object):
             )
         )
 
-	# temp hack
-	if self.engine.removeSharedCells == True:
+
+        # temp hack
+    	if self.engine.removeSharedCells == True:
             for mote in self.engine.motes:
-		for ts in range(1,10):
-		    mote.schedule.pop(ts)
-	    self.engine.removeSharedCells = False
+        		for ts in range(1,10):
+        		    mote.schedule.pop(ts)
+    	    self.engine.removeSharedCells = False
 
         # schedule next statistics collection
         self.engine.scheduleAtAsn(
@@ -245,8 +246,8 @@ class SimStats(object):
                 vals += ['{0:.3f}'.format(stats[k])]
             elif k in stats:
                 vals += [stats[k]]
-	    else:
-		vals += [0]
+            else:
+                vals += [0]
 
         output += ['  '+formatString.format(*tuple(vals))]
 
@@ -285,52 +286,52 @@ class SimStats(object):
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,(mote.getMoteStats()['chargeConsumed']-self.engine.startCharge[mote.id])/self.settings.numCyclesPerRun) for mote in self.engine.motes])
             )
         ]
-	pgen=0
-	for mote in self.engine.motes:
-		pgen=pgen+mote.getMoteStats()['pktGen']
+    	pgen=0
+    	for mote in self.engine.motes:
+    		pgen=pgen+mote.getMoteStats()['pktGen']
         output += [
             '#PktGen runNum={0} {1} {2}'.format(
                 self.runNum,
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktGen']) for mote in self.engine.motes]),pgen
             )
         ]
-	prec=0
-	for mote in self.engine.motes:
-		prec=prec+mote.getMoteStats()['pktReceived']
+        prec=0
+        for mote in self.engine.motes:
+            prec=prec+mote.getMoteStats()['pktReceived']
         output += [
             '#PktReceived runNum={0} {1} {2}'.format(
                 self.runNum,
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktReceived']) for mote in self.engine.motes]),prec
             )
         ]
-	pqueued=0
-	for mote in self.engine.motes:
-		pqueued=pqueued+mote.getMoteStats()['dataQueueFill']
-	output += [
+        pqueued=0
+        for mote in self.engine.motes:
+            pqueued=pqueued+mote.getMoteStats()['dataQueueFill']
+        output += [
             '#PktInQueue runNum={0} {1} {2}'.format(
                 self.runNum,
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['dataQueueFill']) for mote in self.engine.motes]),pqueued
             )
         ]
-	pdropqueue=0
-	for mote in self.engine.motes:
-		pdropqueue=pdropqueue+mote.getMoteStats()['pktDropQueue']
-	output += [
+    	pdropqueue=0
+    	for mote in self.engine.motes:
+    		pdropqueue=pdropqueue+mote.getMoteStats()['pktDropQueue']
+    	output += [
             '#PktDropsQueue runNum={0} {1} {2}'.format(
                 self.runNum,
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktDropQueue']) for mote in self.engine.motes]),pdropqueue
             )
         ]
-	pdropmac=0
-	for mote in self.engine.motes:
-		pdropmac=pdropmac+mote.getMoteStats()['pktDropMac']
-	output += [
+        pdropmac=0
+        for mote in self.engine.motes:
+            pdropmac=pdropmac+mote.getMoteStats()['pktDropMac']
+        output += [
             '#PktDropsMac runNum={0} {1} {2}'.format(
                 self.runNum,
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,mote.getMoteStats()['pktDropMac']) for mote in self.engine.motes]),pdropmac
             )
         ]
-	assert pgen == prec + pqueued + pdropqueue + pdropmac
+        assert pgen == prec + pqueued + pdropqueue + pdropmac
         if self.settings.withJoin:
             output += [
                 '#join runNum={0} {1}'.format(
@@ -344,13 +345,13 @@ class SimStats(object):
                     ' '.join(['{0}@{1}'.format(mote.id, mote.firstBeaconAsn) for mote in self.engine.motes])
                 )
             ]
-	if self.settings.withBootstrap:
-	    output += [
-                '#firstReady runNum={0} {1}'.format(
-                    self.runNum,
-                    ' '.join(['{0}@{1}'.format(mote.id, mote.firstIsBootstrapped) for mote in self.engine.motes])
-                )
-            ]
+        if self.settings.withBootstrap:
+            output += [
+                    '#firstReady runNum={0} {1}'.format(
+                        self.runNum,
+                        ' '.join(['{0}@{1}'.format(mote.id, mote.firstIsBootstrapped) for mote in self.engine.motes])
+                    )
+                ]
         output  = '\n'.join(output)
 
         with open(self.settings.getOutputFile(),'a') as f:
