@@ -2641,6 +2641,21 @@ class Mote(object):
                         elif self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
                             self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['state'] = self.SIX_STATE_IDLE
                             self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['blockedCells'] = []
+                    else:
+			if self.pktToSend['type'] != self.APP_TYPE_DATA:
+
+                            # update mote stats
+                            self._stats_incrementMoteStats('droppedMacRetries')
+
+                            # remove packet from queue
+                            self.txQueue.remove(self.pktToSend)
+
+			    if self.pktToSend['type'] == self.IANA_6TOP_TYPE_REQUEST:
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['tx']['state'] = self.SIX_STATE_IDLE
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['tx']['blockedCells'] = []
+                            elif self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['state'] = self.SIX_STATE_IDLE
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['blockedCells'] = []
 
                 # reset backoff in case of shared slot or in case of a tx slot when the queue is empty
                 if self.schedule[ts]['dir'] == self.DIR_TXRX_SHARED or (self.schedule[ts]['dir'] == self.DIR_TX and not self.txQueue):
@@ -2695,7 +2710,21 @@ class Mote(object):
                         elif self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
                             self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['state'] = self.SIX_STATE_IDLE
                             self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['blockedCells'] = []
+                    else:
+			if self.pktToSend['type'] != self.APP_TYPE_DATA:
 
+                            # update mote stats
+                            self._stats_incrementMoteStats('droppedMacRetries')
+
+                            # remove packet from queue
+                            self.txQueue.remove(self.pktToSend)
+
+			    if self.pktToSend['type'] == self.IANA_6TOP_TYPE_REQUEST:
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['tx']['state'] = self.SIX_STATE_IDLE
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['tx']['blockedCells'] = []
+                            elif self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['state'] = self.SIX_STATE_IDLE
+                                self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['blockedCells'] = []
             # end of radio activity, not waiting for anything
             self.waitingFor = None
 
