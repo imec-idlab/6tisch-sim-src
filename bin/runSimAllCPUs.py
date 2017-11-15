@@ -13,14 +13,16 @@ import multiprocessing
 MIN_TOTAL_RUNRUNS = 4
 
 def runOneSim(params):
-    (cpuID,numRuns,numMotes,namedir,rpl,otf,sixtop) = params
+    (cpuID,numRuns,namedir,pkPeriod) = params
 
     command     = []
     command    += ['python runSimOneCPU.py']
     command    += ['--numRuns {0}'.format(numRuns)]
 
-    #command    += ['--numMotes {0}'.format(numMotes)] 
-    #command    += ['--simDataDir {0}'.format(namedir)]
+    command    += ['--pkPeriod {0}'.format(pkPeriod)]
+
+    #command    += ['--numMotes {0}'.format(numMotes)]
+    command    += ['--simDataDir {0}'.format(namedir)]
     #command    += ['--dioPeriod {0}'.format(rpl)]
     #command    += ['--otfHousekeepingPeriod {0}'.format(otf)]
     #command    += ['--sixtopHousekeepingPeriod {0}'.format(sixtop)]
@@ -36,7 +38,7 @@ def printProgress(num_cpus):
         time.sleep(1)
         output     = []
         for cpu in range(num_cpus):
-	    
+
             with open('cpu{0}.templog'.format(cpu),'r') as f:
                 output += ['[cpu {0}] {1}'.format(cpu,f.read())]
         allDone = True
@@ -55,16 +57,13 @@ if __name__ == '__main__':
 
     #reading parameters
     namedir=os.sys.argv[1]
-    numMotes=os.sys.argv[2]
-    rpl=os.sys.argv[3]
-    otf=os.sys.argv[4]
-    sixtop=os.sys.argv[5]
+    pkPeriod=os.sys.argv[2]
 
     multiprocessing.freeze_support()
     #num_cpus = multiprocessing.cpu_count()
     num_cpus = 4
     runsPerCpu = int(math.ceil(float(MIN_TOTAL_RUNRUNS)/float(num_cpus)))
     pool = multiprocessing.Pool(num_cpus)
-    pool.map_async(runOneSim,[(i,runsPerCpu,numMotes,namedir,rpl,otf,sixtop) for i in range(num_cpus)])
+    pool.map_async(runOneSim,[(i,runsPerCpu,namedir,pkPeriod) for i in range(num_cpus)])
     printProgress(num_cpus)
     print("Done. Press Enter to close.")

@@ -283,7 +283,7 @@ class Topology(object):
                             numStableNeighbors += 1
 			    pdr = self._computePDR(cm,mote)
                             print 'Mote %d (RSSI %.4f) - Stable RSSI %.4f - other mote %d (RSSI %.4f) --> PDR = %.4f' % (mote.id, rssi, self.STABLE_RSSI_GHz, cm.id, rssi, pdr)
-                            
+
 
                 # make sure it is connected to at least STABLE_NEIGHBORS motes
                 # or connected to all the currently deployed motes when the number of deployed motes

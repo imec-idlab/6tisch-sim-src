@@ -71,7 +71,7 @@ def parseCliOptions():
     parser.add_argument( '--numCyclesPerRun',
         dest       = 'numCyclesPerRun',
         type       = int,
-        default    = 300,
+        default    = 8000,
         help       = '[simulation] Duration of a run, in slotframes.',
     )
     parser.add_argument('--simDataDir',
@@ -106,7 +106,7 @@ def parseCliOptions():
         dest       = 'withJoin',
         nargs      = '+',
         type       = int,
-        default    = 1,
+        default    = 0,
         help       =' [join process] 1 to enable join process.',
     )
     parser.add_argument( '--joinNumExchanges',

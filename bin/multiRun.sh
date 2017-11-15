@@ -20,56 +20,66 @@ while [ $nodes -le $nodesMax ]
 do
    echo "Simulating with $nodes nodes...: runSimAllCPU.py $nodes $rpl $otf $sixtop" 
 
+   namedir="simData/journal-subghz-pkperiod-1"
 
-   #mkdir simData_sf0_rpl_$rpl\_otf_$otf\_sixtop_$sixtop 2&>/dev/null
-   #mkdir simData_sf0_rpl_$rpl\-otf_$otf\-sixtop_$sixtop/simData_numMotes_$nodes 2&>/dev/null
-   namedir="simData/journal"
-   #namedirsub="simData_sf0_rpl_"$rpl"_otf_"$otf"_sixtop_"$sixtop"/simdata_numMotes_$nodes"
-   #echo $namedir
-   #echo $namedirsub
    mkdir `echo $namedir` 2> /dev/null
-   #mkdir `echo $namedirsub` 2> /dev/null
-   #mkdir topology-simData_$scheduler-$mobility\-hops$maxnumhops\-deBrasCells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop\_trafficType_$trafficType
-   #mkdir topology-simData_$scheduler-$mobility\-hops$maxnumhops\-deBrasCells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop\_trafficType_$trafficType/maxNumHops_$maxnumhops\_mobilityModel_$mobility\_numDeBraSCells_$numBr\_numMotes_$nodes\_numRadios_$numRadios\_scheduler_$scheduler\_topology_$topo
 
-   #echo "$namedirsub $nodes $rpl $otf $sixtop"
-   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python runSimAllCPUs.py $namedir 1
    python duplicate_cpus.py $namedir
-   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python runSimAllCPUs.py $namedir 1
    python duplicate_cpus.py $namedir
-   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python runSimAllCPUs.py $namedir 1
    python duplicate_cpus.py $namedir
-   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python runSimAllCPUs.py $namedir 1
    python duplicate_cpus.py $namedir
-   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
+   python runSimAllCPUs.py $namedir 1
    python duplicate_cpus.py $namedir
 
-#   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
-#   python duplicate_cpus.py $namedir
+   namedir="simData/journal-subghz-pkperiod-60"
 
-#   python runSimAllCPUs.py $namedir $nodes $rpl $otf $sixtop
-#   python duplicate_cpus.py $namedir
+   mkdir `echo $namedir` 2> /dev/null
 
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios $trafficType
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-deBrasCells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop\_trafficType_$trafficType
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios $trafficType
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-deBrasCells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop\_trafficType_$trafficType
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
-#   python runSimAllCPUs.py $nodes $scheduler $numBr $rpl $otf $sixtop $topo $maxnumhops $squareSide $mobility $numRadios
-#   python duplicate_cpus.py simData_$scheduler-$mobility\-hops$maxnumhops\-brcells$numBr-numRadios$numRadios\_rpl_$rpl\_otf_$otf\_sixtop_$sixtop
+   python runSimAllCPUs.py $namedir 60
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 60
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 60
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 60
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 60
+   python duplicate_cpus.py $namedir
+
+   namedir="simData/journal-subghz-pkperiod-1800"
+
+   mkdir `echo $namedir` 2> /dev/null
+
+   python runSimAllCPUs.py $namedir 1800
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 1800
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 1800
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 1800
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 1800
+   python duplicate_cpus.py $namedir
+
+   namedir="simData/journal-subghz-pkperiod-3600"
+
+   mkdir `echo $namedir` 2> /dev/null
+
+   python runSimAllCPUs.py $namedir 3600
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 3600
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 3600
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 3600
+   python duplicate_cpus.py $namedir
+   python runSimAllCPUs.py $namedir 3600
+   python duplicate_cpus.py $namedir
+
 
    nodes=`expr $nodes + $alfa `
 
