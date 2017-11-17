@@ -10,7 +10,7 @@ import time
 import math
 import multiprocessing
 
-MIN_TOTAL_RUNRUNS = 4
+MIN_TOTAL_RUNRUNS = 2
 
 def runOneSim(params):
     (cpuID,numRuns,namedir,pkPeriod) = params
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     multiprocessing.freeze_support()
     #num_cpus = multiprocessing.cpu_count()
-    num_cpus = 4
+    num_cpus = 2
     runsPerCpu = int(math.ceil(float(MIN_TOTAL_RUNRUNS)/float(num_cpus)))
     pool = multiprocessing.Pool(num_cpus)
     pool.map_async(runOneSim,[(i,runsPerCpu,namedir,pkPeriod) for i in range(num_cpus)])

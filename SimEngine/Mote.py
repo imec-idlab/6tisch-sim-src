@@ -70,7 +70,7 @@ class Mote(object):
     RPL_PARENT_SWITCH_THRESHOLD        = 768 # corresponds to 1.5 hops. 6tisch minimal draft use 384 for 2*ETX.
     RPL_MIN_HOP_RANK_INCREASE          = 256
     RPL_MAX_ETX                        = 4
-    RPL_MAX_RANK_INCREASE              = RPL_MAX_ETX*RPL_MIN_HOP_RANK_INCREASE*2 # 4 transmissions allowed for rank increase for parents
+    RPL_MAX_RANK_INCREASE              = RPL_MAX_ETX*RPL_MIN_HOP_RANK_INCREASE*1 # 4 transmissions allowed for rank increase for parents
     RPL_MAX_TOTAL_RANK                 = 256*RPL_MIN_HOP_RANK_INCREASE*2 # 256 transmissions allowed for total path cost for parents
     RPL_PARENT_SET_SIZE                = 1
     DEFAULT_DIO_INTERVAL_MIN           = 3 # log2(DIO_INTERVAL_MIN), with DIO_INTERVAL_MIN expressed in ms
@@ -154,20 +154,31 @@ class Mote(object):
     # CHARGE_IdleNotSync_uC              = 49.44
     # CHARGE_Sleep_uC                    = 1.44
 
+    CHARGE_Idle_uC                     = 0
+    CHARGE_TxData_uC                   = 1
+    CHARGE_TxDataRxAck_uC              = 2
+    CHARGE_RxDataTxAck_uC              = 3
+    CHARGE_RxData_uC                   = 4
+    CHARGE_IdleNotSync_uC              = 5
+    CHARGE_Sleep_uC                    = 6
+
+
+
 #868MHz
-    CHARGE_Idle_uC                     = 97.94
-    CHARGE_TxDataRxAck_uC              = 308.87
-    CHARGE_TxData_uC                   = 237.23
-    CHARGE_RxDataTxAck_uC              = 323.11
-    CHARGE_RxData_uC                   = 250.57
-    CHARGE_IdleNotSync_uC              = 97.94
-    CHARGE_Sleep_uC                    = 12.43
+    # CHARGE_Idle_uC                     = 97.94
+    # CHARGE_TxDataRxAck_uC              = 308.87
+    # CHARGE_TxData_uC                   = 237.23
+    # CHARGE_RxDataTxAck_uC              = 323.11
+    # CHARGE_RxData_uC                   = 250.57
+    # CHARGE_IdleNotSync_uC              = 97.94
+    # CHARGE_Sleep_uC                    = 12.43
 
 
 
     BROADCAST_ADDRESS                  = 0xffff
 
     def __init__(self,id):
+        random.seed(6)
         # store params
         self.id                        = id
         # local variables
@@ -176,6 +187,11 @@ class Mote(object):
         self.engine                    = SimEngine.SimEngine()
         self.settings                  = SimSettings.SimSettings()
         self.propagation               = Propagation.Propagation()
+
+        self.consumption_24 = {0: 49.44, 1: 84.71, 2: 109.23, 3: 111.71, 4: 86.4, 5: 49.44, 6: 1.44}
+        self.consumption_sub = {0: 97.94, 1: 308.87, 2: 237.23, 3: 323.11, 4: 250.57, 5: 97.94, 6: 12.43}
+
+        self.consumptionValues         = self.consumption_24 if not self.settings.subGHz else self.consumption_sub
 
         # join process
         self.isJoined                  = False if self.settings.withJoin else True
@@ -3007,7 +3023,7 @@ class Mote(object):
 
     def _logChargeConsumed(self,charge):
         with self.dataLock:
-            self.chargeConsumed  += charge
+            self.chargeConsumed  += self.consumptionValues[charge]
 
     #======================== private =========================================
 

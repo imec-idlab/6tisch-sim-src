@@ -96,8 +96,8 @@ class SimStats(object):
 
         for mote in self.engine.motes:
             nrSleepSlots = self.settings.slotframeLength - len(mote.schedule)
-            consumption = nrSleepSlots * mote.CHARGE_Sleep_uC
-            mote._logChargeConsumed(consumption)
+            consumption = nrSleepSlots * mote.consumptionValues[mote.CHARGE_Sleep_uC]
+            mote.chargeConsumed += consumption
             # print 'Mote %d, %d/101. SLEEP consumption %.4f' % (mote.id, len(mote.schedule), consumption)
 
         cycle = int(self.engine.getAsn()/self.settings.slotframeLength)
@@ -291,9 +291,53 @@ class SimStats(object):
                 ' '.join(['{0}@{1:.2f}'.format(mote.id,(mote.getMoteStats()['chargeConsumed']-self.engine.startCharge[mote.id])/self.settings.numCyclesPerRun) for mote in self.engine.motes])
             )
         ]
-    	pgen=0
-    	for mote in self.engine.motes:
-    		pgen=pgen+mote.getMoteStats()['pktGen']
+
+        hopcnt = {}
+        for mote in self.engine.motes:
+            if mote.id == 0:
+                hopcnt[mote.id] = 0
+                continue
+            hopcnt[mote.id] = 1
+            m = mote
+            while m.preferredParent.id != 0:
+                hopcnt[mote.id] += 1
+                m = m.preferredParent
+        output += [
+            '#hopcount runNum={0} {1}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1}'.format(mote.id,hopcnt[mote.id]) for mote in self.engine.motes])
+            )
+        ]
+
+        pp = {}
+        for mote in self.engine.motes:
+            if mote.id == 0:
+                pp[mote.id] = -1
+                continue
+            pp[mote.id] = mote.preferredParent.id
+        output += [
+            '#prefParent runNum={0} {1}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1}'.format(mote.id,pp[mote.id]) for mote in self.engine.motes])
+            )
+        ]
+
+        children = {}
+        for mote in self.engine.motes:
+            children[mote.id] = 0
+        for mote in self.engine.motes:
+            if mote.preferredParent != None:
+                children[mote.preferredParent.id] += 1
+        output += [
+            '#children runNum={0} {1}'.format(
+                self.runNum,
+                ' '.join(['{0}@{1}'.format(mote.id,children[mote.id]) for mote in self.engine.motes])
+            )
+        ]
+
+        pgen=0
+        for mote in self.engine.motes:
+            pgen=pgen+mote.getMoteStats()['pktGen']
         output += [
             '#PktGen runNum={0} {1} {2}'.format(
                 self.runNum,

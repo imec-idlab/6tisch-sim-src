@@ -45,6 +45,7 @@ class Topology(object):
     FULLY_MESHED_SQUARE_SIDE = 0.005        # (hack) small value to speed up the construction of fully-meshed topology
 
     def __init__(self, motes):
+        np.random.seed(3)
         # store params
         self.motes           = motes
 

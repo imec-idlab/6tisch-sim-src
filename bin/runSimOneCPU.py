@@ -71,7 +71,7 @@ def parseCliOptions():
     parser.add_argument( '--numCyclesPerRun',
         dest       = 'numCyclesPerRun',
         type       = int,
-        default    = 8000,
+        default    = 20,
         help       = '[simulation] Duration of a run, in slotframes.',
     )
     parser.add_argument('--simDataDir',
@@ -85,7 +85,7 @@ def parseCliOptions():
         dest       = 'numMotes',
         nargs      = '+',
         type       = int,
-        default    = [25],
+        default    = [5],
         help       = '[topology] Number of simulated motes.',
     )
     parser.add_argument( '--squareSide',
@@ -183,7 +183,7 @@ def parseCliOptions():
         dest       = 'otfThreshold',
         nargs      = '+',
         type       = int,
-        default    = 2,
+        default    = 0,
         help       = '[otf] OTF threshold (cells).',
     )
     parser.add_argument( '--otfHousekeepingPeriod',
@@ -291,7 +291,7 @@ def parseCliOptions():
         dest       = 'subGHz',
         nargs      = '+',
         type       = int,
-        default    = 1,
+        default    = 0,
         help       = '[phy] Enable sub-GHz communication.',
     )
     parser.add_argument('--GHzModel',
