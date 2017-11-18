@@ -71,7 +71,7 @@ def parseCliOptions():
     parser.add_argument( '--numCyclesPerRun',
         dest       = 'numCyclesPerRun',
         type       = int,
-        default    = 20,
+        default    = 5000,
         help       = '[simulation] Duration of a run, in slotframes.',
     )
     parser.add_argument('--simDataDir',
@@ -85,7 +85,7 @@ def parseCliOptions():
         dest       = 'numMotes',
         nargs      = '+',
         type       = int,
-        default    = [3],
+        default    = [25],
         help       = '[topology] Number of simulated motes.',
     )
     parser.add_argument( '--squareSide',
