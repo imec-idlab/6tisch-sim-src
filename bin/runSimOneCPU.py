@@ -85,7 +85,7 @@ def parseCliOptions():
         dest       = 'numMotes',
         nargs      = '+',
         type       = int,
-        default    = [25],
+        default    = [3],
         help       = '[topology] Number of simulated motes.',
     )
     parser.add_argument( '--squareSide',

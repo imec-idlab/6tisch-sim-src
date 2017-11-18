@@ -13,13 +13,14 @@ import multiprocessing
 MIN_TOTAL_RUNRUNS = 2
 
 def runOneSim(params):
-    (cpuID,numRuns,namedir,pkPeriod) = params
+    (cpuID,numRuns,namedir,pkPeriod,subGHz) = params
 
     command     = []
     command    += ['python runSimOneCPU.py']
     command    += ['--numRuns {0}'.format(numRuns)]
 
     command    += ['--pkPeriod {0}'.format(pkPeriod)]
+    command    += ['--subGHz {0}'.format(subGHz)]
 
     #command    += ['--numMotes {0}'.format(numMotes)]
     command    += ['--simDataDir {0}'.format(namedir)]
@@ -58,12 +59,13 @@ if __name__ == '__main__':
     #reading parameters
     namedir=os.sys.argv[1]
     pkPeriod=os.sys.argv[2]
+    subGHz=os.sys.argv[3]
 
     multiprocessing.freeze_support()
     #num_cpus = multiprocessing.cpu_count()
     num_cpus = 2
     runsPerCpu = int(math.ceil(float(MIN_TOTAL_RUNRUNS)/float(num_cpus)))
     pool = multiprocessing.Pool(num_cpus)
-    pool.map_async(runOneSim,[(i,runsPerCpu,namedir,pkPeriod) for i in range(num_cpus)])
+    pool.map_async(runOneSim,[(i,runsPerCpu,namedir,pkPeriod,subGHz) for i in range(num_cpus)])
     printProgress(num_cpus)
     print("Done. Press Enter to close.")

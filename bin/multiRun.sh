@@ -13,69 +13,100 @@ otf=5
 sixtop=5
 
 nodes=$nodesInit
+sub=0
 
 while [ $nodes -le $nodesMax ]
 do
    echo "Simulating with $nodes nodes...: runSimAllCPU.py $nodes $rpl $otf $sixtop"
 
-   namedir="simData/journal-subghz-pkperiod-1"
+   namedir="simData/journal-subghz-$sub-pkperiod-1"
 
    mkdir `echo $namedir` 2> /dev/null
 
-   python runSimAllCPUs.py $namedir 1
+   python runSimAllCPUs.py $namedir 1 $sub
    python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1
+  #  python runSimAllCPUs.py $namedir 1 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1
+  #  python runSimAllCPUs.py $namedir 1 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1
+  #  python runSimAllCPUs.py $namedir 1 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1
+  #  python runSimAllCPUs.py $namedir 1 $sub
   #  python duplicate_cpus.py $namedir
 
-   namedir="simData/journal-subghz-pkperiod-60"
+    namedir="simData/journal-subghz-$sub-pkperiod-30"
+
+    mkdir `echo $namedir` 2> /dev/null
+
+    python runSimAllCPUs.py $namedir 30 $sub
+    python duplicate_cpus.py $namedir
+    #  python runSimAllCPUs.py $namedir 30 $sub
+    #  python duplicate_cpus.py $namedir
+    #  python runSimAllCPUs.py $namedir 30 $sub
+    #  python duplicate_cpus.py $namedir
+    #  python runSimAllCPUs.py $namedir 30 $sub
+    #  python duplicate_cpus.py $namedir
+    #  python runSimAllCPUs.py $namedir 30 $sub
+    #  python duplicate_cpus.py $namedir
+
+   namedir="simData/journal-subghz-$sub-pkperiod-60"
 
    mkdir `echo $namedir` 2> /dev/null
 
-   python runSimAllCPUs.py $namedir 60
+   python runSimAllCPUs.py $namedir 60 $sub
    python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 60
+  #  python runSimAllCPUs.py $namedir 60 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 60
+  #  python runSimAllCPUs.py $namedir 60 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 60
+  #  python runSimAllCPUs.py $namedir 60 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 60
+  #  python runSimAllCPUs.py $namedir 60 $sub
   #  python duplicate_cpus.py $namedir
 
-   namedir="simData/journal-subghz-pkperiod-1800"
+  namedir="simData/journal-subghz-$sub-pkperiod-900"
+
+  mkdir `echo $namedir` 2> /dev/null
+
+  python runSimAllCPUs.py $namedir 900 $sub
+  python duplicate_cpus.py $namedir
+ #  python runSimAllCPUs.py $namedir 900 $sub
+ #  python duplicate_cpus.py $namedir
+ #  python runSimAllCPUs.py $namedir 900 $sub
+ #  python duplicate_cpus.py $namedir
+ #  python runSimAllCPUs.py $namedir 900 $sub
+ #  python duplicate_cpus.py $namedir
+ #  python runSimAllCPUs.py $namedir 900 $sub
+ #  python duplicate_cpus.py $namedir
+
+   namedir="simData/journal-subghz-$sub-pkperiod-1800"
 
    mkdir `echo $namedir` 2> /dev/null
 
-   python runSimAllCPUs.py $namedir 1800
+   python runSimAllCPUs.py $namedir 1800 $sub
    python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1800
+  #  python runSimAllCPUs.py $namedir 1800 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1800
+  #  python runSimAllCPUs.py $namedir 1800 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1800
+  #  python runSimAllCPUs.py $namedir 1800 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 1800
+  #  python runSimAllCPUs.py $namedir 1800 $sub
   #  python duplicate_cpus.py $namedir
 
-   namedir="simData/journal-subghz-pkperiod-3600"
-
-   mkdir `echo $namedir` 2> /dev/null
-
-   python runSimAllCPUs.py $namedir 3600
-   python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600
+   # namedir="simData/journal-subghz-$sub-pkperiod-3600"
+   #
+   # mkdir `echo $namedir` 2> /dev/null
+   #
+   # python runSimAllCPUs.py $namedir 3600 $sub
+   # python duplicate_cpus.py $namedir
+  #  python runSimAllCPUs.py $namedir 3600 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600
+  #  python runSimAllCPUs.py $namedir 3600 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600
+  #  python runSimAllCPUs.py $namedir 3600 $sub
   #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600
+  #  python runSimAllCPUs.py $namedir 3600 $sub
   #  python duplicate_cpus.py $namedir
 
 
