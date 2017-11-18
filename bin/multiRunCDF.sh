@@ -19,7 +19,7 @@ while [ $nodes -le $nodesMax ]
 do
    echo "Simulating with $nodes nodes...: runSimAllCPU.py $nodes $rpl $otf $sixtop"
 
-   namedir="simData/journal-subghz-$sub-grid-25"
+   namedir="simData/journal-subghz-0-grid-25"
 
    mkdir `echo $namedir` 2> /dev/null
 
@@ -34,7 +34,7 @@ do
    python runSimAllCPUs.py $namedir 5 0
    python duplicate_cpus.py $namedir
 
-   namedir="simData/journal-subghz-$sub-grid-25"
+   namedir="simData/journal-subghz-1-grid-25"
 
    mkdir `echo $namedir` 2> /dev/null
 
