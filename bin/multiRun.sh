@@ -12,8 +12,6 @@ rpl=10
 otf=5
 sixtop=5
 
-
-
 nodes=$nodesInit
 
 while [ $nodes -le $nodesMax ]

@@ -51,9 +51,7 @@ class Propagation(object):
             return
         self._init = True
         #===== end singleton
-
-        random.seed(6)
-
+        
         # store params
         self.settings                  = SimSettings.SimSettings()
         self.engine                    = SimEngine.SimEngine()

@@ -178,7 +178,6 @@ class Mote(object):
     BROADCAST_ADDRESS                  = 0xffff
 
     def __init__(self,id):
-        random.seed(6)
         # store params
         self.id                        = id
         # local variables
@@ -809,19 +808,36 @@ class Mote(object):
     def _rpl_housekeeping(self):
         with self.dataLock:
 
-            #===
-            # refresh the following parameters:
-            # - self.preferredParent
-            # - self.rank
-            # - self.dagRank
-            # - self.parentSet
+#===
+           # refresh the following parameters:
+           # - self.preferredParent
+           # - self.rank
+           # - self.dagRank
+           # - self.parentSet
 
             # calculate my potential rank with each of the motes I have heard a DIO from
             potentialRanks = {}
             for (neighbor,neighborRank) in self.neighborRank.items():
-                # calculate the rank increase to that neighbor
-                rankIncrease = self._rpl_calcRankIncrease(neighbor)
-                if rankIncrease!=None and rankIncrease<=min([self.RPL_MAX_RANK_INCREASE, self.RPL_MAX_TOTAL_RANK-neighborRank]):
+               # calculate the rank increase to that neighbor
+               rankIncrease = self._rpl_calcRankIncrease(neighbor)
+               if rankIncrease!=None and rankIncrease<=min([self.RPL_MAX_RANK_INCREASE, self.RPL_MAX_TOTAL_RANK-neighborRank]):
+                    #check if there is a loop and if exists, skip the neighbor
+                    rootReached=False
+                    skipNeighbor=False
+                    inode=neighbor
+                    while rootReached==False:
+                        if inode.preferredParent!=None:
+                            if inode.preferredParent.id==self.id:
+                                skipNeighbor=True
+                            if inode.preferredParent.id==0:
+                                rootReached=True
+                            else:
+                                inode=inode.preferredParent
+                        else:
+                            rootReached=True
+                    if skipNeighbor==True:
+                        continue
+
                     # record this potential rank
                     potentialRanks[neighbor] = neighborRank+rankIncrease
 
