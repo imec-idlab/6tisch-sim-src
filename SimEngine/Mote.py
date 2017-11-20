@@ -187,8 +187,8 @@ class Mote(object):
         self.settings                  = SimSettings.SimSettings()
         self.propagation               = Propagation.Propagation()
 
-        self.consumption_24 = {0: 49.44, 1: 84.71, 2: 109.23, 3: 111.71, 4: 86.4, 5: 49.44, 6: 1.44}
-        self.consumption_sub = {0: 97.94, 1: 308.87, 2: 237.23, 3: 323.11, 4: 250.57, 5: 97.94, 6: 12.43}
+        self.consumption_24 = {0: 48.98, 1: 84.26, 2: 108.78, 3: 111.27, 4: 85.95, 5: 48.98, 6: 0.97}
+        self.consumption_sub = {0: 87.29, 1: 227.38, 2: 299.97, 3: 314.31, 4: 241.0, 5: 87.29, 6: 1.07}
 
         self.consumptionValues         = self.consumption_24 if not self.settings.subGHz else self.consumption_sub
 

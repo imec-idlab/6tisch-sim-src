@@ -51,7 +51,7 @@ class Propagation(object):
             return
         self._init = True
         #===== end singleton
-        
+
         # store params
         self.settings                  = SimSettings.SimSettings()
         self.engine                    = SimEngine.SimEngine()

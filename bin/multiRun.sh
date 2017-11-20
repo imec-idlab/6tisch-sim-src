@@ -13,7 +13,7 @@ otf=5
 sixtop=5
 
 nodes=$nodesInit
-sub=1
+sub=0
 
 while [ $nodes -le $nodesMax ]
 do
@@ -100,14 +100,14 @@ do
    #
    # python runSimAllCPUs.py $namedir 3600 $sub
    # python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600 $sub
-  #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600 $sub
-  #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600 $sub
-  #  python duplicate_cpus.py $namedir
-  #  python runSimAllCPUs.py $namedir 3600 $sub
-  #  python duplicate_cpus.py $namedir
+   # python runSimAllCPUs.py $namedir 3600 $sub
+   # python duplicate_cpus.py $namedir
+   # python runSimAllCPUs.py $namedir 3600 $sub
+   # python duplicate_cpus.py $namedir
+   # python runSimAllCPUs.py $namedir 3600 $sub
+   # python duplicate_cpus.py $namedir
+   # python runSimAllCPUs.py $namedir 3600 $sub
+   # python duplicate_cpus.py $namedir
 
 
    nodes=`expr $nodes + $alfa `
