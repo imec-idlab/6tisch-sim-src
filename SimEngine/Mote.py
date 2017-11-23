@@ -130,8 +130,8 @@ class Mote(object):
     #=== tsch
     TSCH_QUEUE_SIZE                    = 10
     TSCH_MAXTXRETRIES                  = 5
-    TSCH_MIN_BACKOFF_EXPONENT          = 4
-    TSCH_MAX_BACKOFF_EXPONENT          = 6
+    TSCH_MIN_BACKOFF_EXPONENT          = 2
+    TSCH_MAX_BACKOFF_EXPONENT          = 4
     #=== radio
     RADIO_MAXDRIFT                     = 30 # in ppm
     #=== battery
@@ -2165,7 +2165,7 @@ class Mote(object):
                     self.sixtopStates[smac.id]['rx'] = {}
                     self.sixtopStates[smac.id]['rx']['blockedCells']=[]
                     self.sixtopStates[smac.id]['rx']['seqNum']=0
-                self.sixtopStates[smac.id]['rx']['state'] = self.SIX_STATE_REQUEST_ADD_RECEIVED
+                self.sixtopStates[smac.id]['rx']['state'] = self.SIX_STATE_REQUEST_DELETE_RECEIVED
                 self._sixtop_enqueue_RESPONSE(neighbor, [], returnCode, dirNeighbor,seq)
                 return
 
@@ -2717,6 +2717,13 @@ class Mote(object):
                 if self.txQueue[i]['retriesLeft'] > 0:
                     self.txQueue[i]['retriesLeft'] -= 1
 
+                if self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
+                    self._log(
+                        self.DEBUG,
+                        "[6top] RESPONSE FAILED ON {0} failed for neighbor {1} for message with seqNum = {2}.",
+                        (self.id, self.pktToSend['dstIp'].id, self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['seqNum']),
+                    )
+
                 # drop packet if retried too many time
                 if self.txQueue[i]['retriesLeft'] == 0:
 
@@ -2742,6 +2749,12 @@ class Mote(object):
                         elif self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
                             self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['state'] = self.SIX_STATE_IDLE
                             self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['blockedCells'] = []
+                            if self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
+                                self._log(
+                                    self.DEBUG,
+                                    "[6top] RESPONSE DELETED (QUEUE FULL) ON {0} failed for neighbor {1} for message with seqNum = {2}.",
+                                    (self.id, self.pktToSend['dstIp'].id, self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['seqNum']),
+                                )
                     else:
                         if self.pktToSend['type'] != self.APP_TYPE_DATA:
 
@@ -2757,6 +2770,12 @@ class Mote(object):
                             elif self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
                                 self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['state'] = self.SIX_STATE_IDLE
                                 self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['blockedCells'] = []
+                                if self.pktToSend['type'] == self.IANA_6TOP_TYPE_RESPONSE:
+                                    self._log(
+                                        self.DEBUG,
+                                        "[6top] RESPONSE DELETED (QUEUE not FULL) ON {0} failed for neighbor {1} for message with seqNum = {2}.",
+                                        (self.id, self.pktToSend['dstIp'].id, self.sixtopStates[self.pktToSend['dstIp'].id]['rx']['seqNum']),
+                                    )
             # end of radio activity, not waiting for anything
             self.waitingFor = None
 

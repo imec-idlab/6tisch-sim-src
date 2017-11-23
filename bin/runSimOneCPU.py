@@ -71,7 +71,7 @@ def parseCliOptions():
     parser.add_argument( '--numCyclesPerRun',
         dest       = 'numCyclesPerRun',
         type       = int,
-        default    = 300,
+        default    = 5000,
         help       = '[simulation] Duration of a run, in slotframes.',
     )
     parser.add_argument('--simDataDir',
@@ -183,7 +183,7 @@ def parseCliOptions():
         dest       = 'otfThreshold',
         nargs      = '+',
         type       = int,
-        default    = 0,
+        default    = 2,
         help       = '[otf] OTF threshold (cells).',
     )
     parser.add_argument( '--otfHousekeepingPeriod',
@@ -215,7 +215,7 @@ def parseCliOptions():
         dest       = 'sixtopNoHousekeeping',
         nargs      = '+',
         type       = int,
-        default    = 0,
+        default    = 1,
         help       = '[6top] 1 to disable 6top housekeeping.',
     )
     parser.add_argument('--sixtopNoRemoveWorstCell',

@@ -950,6 +950,8 @@ if __name__ == '__main__':
 
 				# sort the data:
 				data_sorted = np.sort(data)
+
+				print "avg: "
 				
 				# calculate the proportional values of samples
 				p = 1. * np.arange(len(data)) / (len(data) - 1)
